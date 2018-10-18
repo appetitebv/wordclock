@@ -8,8 +8,9 @@ IPAddress NMask(255, 255, 255, 0);
   
 const char* ssid = "Wordclock Wi-Fi";
 const char* passphrase = "test1234";
-String st;
+
 String content;
+String networksJson;
 int statusCode;
 
 void setup() {
@@ -88,39 +89,24 @@ void setupAP() {
   delay(100);
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
-  if (n == 0)
-    Serial.println("no networks found");
-  else
-  {
-    Serial.print(n);
-    Serial.println(" networks found");
-    for (int i = 0; i < n; ++i)
-     {
-      // Print SSID and RSSI for each network found
-      Serial.print(i + 1);
-      Serial.print(": ");
-      Serial.print(WiFi.SSID(i));
-      Serial.print(" (");
-      Serial.print(WiFi.RSSI(i));
-      Serial.print(")");
-      Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?" ":"*");
-      delay(10);
-     }
+
+  networksJson = "[";
+ 
+  for (int i = 0; i < n; ++i) {
+    // Add SSID, RSSI and hasPassword to json for each network found
+    networksJson += "{ \"name\": \"";
+    networksJson += WiFi.SSID(i);
+    networksJson += "\", \"strength\": ";
+    networksJson += WiFi.RSSI(i);
+    networksJson += ", \"hasPassword\": ";
+    networksJson += (WiFi.encryptionType(i) != ENC_TYPE_NONE);
+    networksJson += "}";
   }
-  Serial.println(""); 
-  st = "<ol>";
-  for (int i = 0; i < n; ++i)
-    {
-      // Print SSID and RSSI for each network found
-      st += "<li>";
-      st += WiFi.SSID(i);
-      st += " (";
-      st += WiFi.RSSI(i);
-      st += ")";
-      st += (WiFi.encryptionType(i) == ENC_TYPE_NONE)?" ":"*";
-      st += "</li>";
-    }
-  st += "</ol>";
+
+  networksJson += "]";
+
+  Serial.println(networksJson);
+  
   delay(100);
 
   WiFi.softAPConfig(Ip, Ip, NMask);
@@ -148,13 +134,16 @@ void createWebServer()
       String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
       content = "<!DOCTYPE HTML>\r\n<html>Hello from ESP8266 at ";
       content += ipStr;
-      content += "<p>";
-      content += st;
-      content += "</p><form method='get' action='setting'><label>SSID: </label><input name='ssid' length=32><input name='pass' length=64><input type='submit'></form>";
+      content += "<form method='put' action='update'><label>SSID: </label><input name='ssid' length=32><input name='pass' length=64><input type='submit'></form>";
       content += "</html>";
       server.send(200, "text/html", content);  
   });
-  server.on("/setting", []() {
+  
+  server.on("/nearby-networks", []() {
+    server.send(200, "application/json", networksJson);
+  });
+  
+  server.on("/update", []() {
       String qsid = server.arg("ssid");
       String qpass = server.arg("pass");
       if (qsid.length() > 0 && qpass.length() > 0) {
@@ -166,19 +155,14 @@ void createWebServer()
         Serial.println("");
           
         Serial.println("writing eeprom ssid:");
-        for (int i = 0; i < qsid.length(); ++i)
-          {
-            EEPROM.write(i, qsid[i]);
-            Serial.print("Wrote: ");
-            Serial.println(qsid[i]); 
-          }
+        for (int i = 0; i < qsid.length(); ++i) {
+          EEPROM.write(i, qsid[i]);
+          
+        }
         Serial.println("writing eeprom pass:"); 
-        for (int i = 0; i < qpass.length(); ++i)
-          {
-            EEPROM.write(32+i, qpass[i]);
-            Serial.print("Wrote: ");
-            Serial.println(qpass[i]); 
-          }    
+        for (int i = 0; i < qpass.length(); ++i) {
+          EEPROM.write(32+i, qpass[i]);
+        }    
         EEPROM.commit();
         content = "{\"Success\":\"saved to eeprom... reset to boot into new wifi\"}";
         statusCode = 200;
