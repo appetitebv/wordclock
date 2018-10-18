@@ -3,7 +3,9 @@
 #include <ESP8266WiFi.h>
 
 ESP8266WebServer server(80);
-
+IPAddress Ip(192, 168, 1, 1);
+IPAddress NMask(255, 255, 255, 0);
+  
 const char* ssid = "Wordclock Wi-Fi";
 const char* passphrase = "test1234";
 String st;
@@ -121,6 +123,7 @@ void setupAP() {
   st += "</ol>";
   delay(100);
 
+  WiFi.softAPConfig(Ip, Ip, NMask);
   WiFi.softAP(ssid, passphrase, 6);
   launchWeb();
 }
