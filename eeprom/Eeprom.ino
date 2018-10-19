@@ -1,10 +1,11 @@
 #include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
+#include <DNSServer.h>
 
 ESP8266WebServer server(80);
-IPAddress Ip(192, 168, 1, 1);
-IPAddress NMask(255, 255, 255, 0);
+const byte DNS_PORT = 53;
+DNSServer dnsServer;
   
 const char* ssid = "Wordclock Wi-Fi";
 const char* passphrase = "test1234";
@@ -46,6 +47,7 @@ void setup() {
 }
 
 void loop() {
+  dnsServer.processNextRequest();  
   server.handleClient();
 }
 
@@ -91,7 +93,6 @@ void setupAP() {
   Serial.println("scan done");
 
   networksJson = "[";
- 
   for (int i = 0; i < n; ++i) {
     // Add SSID, RSSI and hasPassword to json for each network found
     networksJson += "{ \"name\": \"";
@@ -102,15 +103,13 @@ void setupAP() {
     networksJson += (WiFi.encryptionType(i) != ENC_TYPE_NONE);
     networksJson += "}";
   }
-
   networksJson += "]";
-
   Serial.println(networksJson);
   
   delay(100);
 
-  WiFi.softAPConfig(Ip, Ip, NMask);
   WiFi.softAP(ssid, passphrase, 6);
+  dnsServer.start(DNS_PORT, "wordclock.local", WiFi.softAPIP());
   launchWeb();
 }
 
