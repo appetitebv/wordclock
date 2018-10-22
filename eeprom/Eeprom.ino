@@ -38,12 +38,13 @@ void setup() {
   Serial.print("PASS: ");
   Serial.println(epass);
 
+  WiFi.mode(WIFI_STA);
   WiFi.begin(esid.c_str(), epass.c_str());
   if (testWifi()) {
     Serial.println("Wifi available");
     launchWebServer();
-    if (!MDNS.begin("wordclock")) { // Start the mDNS responder for wordclock.local
-      Serial.println("Error setting up MDNS responder!");
+    if (MDNS.begin("wordclock")) { // Start the mDNS responder for wordclock.local
+      Serial.println("MDNS responder started");
     }
     return;
   }
@@ -52,7 +53,7 @@ void setup() {
 }
 
 void loop() {
-  dnsServer.processNextRequest();  
+  //dnsServer.processNextRequest();  
   server.handleClient();
 }
 
@@ -92,6 +93,8 @@ bool testWifi() {
 void setupAP() {
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
+
+  WiFi.mode(WIFI_AP);
 
   delay(100);
   int n = WiFi.scanNetworks();
@@ -133,16 +136,6 @@ void launchWebServer() {
 
 void createWebServer()
 {
-  server.on("/", []() {
-      IPAddress ip = WiFi.softAPIP();
-      String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-      content = "<!DOCTYPE HTML>\r\n<html>Hello from ESP8266 at ";
-      content += ipStr;
-      content += "<form method='put' action='update'><label>SSID: </label><input name='ssid' length=32><input name='pass' length=64><input type='submit'></form>";
-      content += "</html>";
-      server.send(200, "text/html", content);  
-  });
-  
   server.on("/nearby-networks", []() {
     server.send(200, "application/json", networksJson);
   });
