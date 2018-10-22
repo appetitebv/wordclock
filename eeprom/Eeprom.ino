@@ -2,6 +2,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
+#include <ESP8266mDNS.h>  
 
 ESP8266WebServer server(80);
 const byte DNS_PORT = 53;
@@ -40,6 +41,10 @@ void setup() {
   WiFi.begin(esid.c_str(), epass.c_str());
   if (testWifi()) {
     Serial.println("Wifi available");
+    launchWebServer();
+    if (!MDNS.begin("wordclock")) { // Start the mDNS responder for wordclock.local
+      Serial.println("Error setting up MDNS responder!");
+    }
     return;
   }
 
@@ -110,10 +115,10 @@ void setupAP() {
 
   WiFi.softAP(ssid, passphrase, 6);
   dnsServer.start(DNS_PORT, "wordclock.local", WiFi.softAPIP());
-  launchWeb();
+  launchWebServer();
 }
 
-void launchWeb() {
+void launchWebServer() {
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.print("Local IP: ");
