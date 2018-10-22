@@ -95,7 +95,13 @@ void setupAP() {
   WiFi.disconnect();
 
   WiFi.mode(WIFI_AP);
+  
+  WiFi.softAP(ssid, passphrase, 6);
+  dnsServer.start(DNS_PORT, "wordclock.local", WiFi.softAPIP());
+  launchWebServer();
+}
 
+void scanNetworks() {
   delay(100);
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
@@ -113,12 +119,8 @@ void setupAP() {
   }
   networksJson += "]";
   Serial.println(networksJson);
-  
-  delay(100);
 
-  WiFi.softAP(ssid, passphrase, 6);
-  dnsServer.start(DNS_PORT, "wordclock.local", WiFi.softAPIP());
-  launchWebServer();
+  delay(100);
 }
 
 void launchWebServer() {
@@ -137,6 +139,8 @@ void launchWebServer() {
 void createWebServer()
 {
   server.on("/nearby-networks", []() {
+    scanNetworks();
+    
     server.send(200, "application/json", networksJson);
   });
   
