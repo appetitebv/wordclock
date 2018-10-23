@@ -77,7 +77,7 @@ void writeProm(String qsid, String qpass) {
 bool testWifi() {
   int c = 0;
   Serial.println("Waiting for Wifi to connect");
-  while ( c < 20 ) {
+  while ( c < 30 ) {
     if (WiFi.status() == WL_CONNECTED) { 
       return true;
     } 
@@ -97,12 +97,11 @@ void setupAP() {
   WiFi.mode(WIFI_AP);
   
   WiFi.softAP(ssid, passphrase, 6);
-  dnsServer.start(DNS_PORT, "wordclock.local", WiFi.softAPIP());
+  dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
   launchWebServer();
 }
 
 void scanNetworks() {
-  delay(100);
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
 
@@ -124,8 +123,6 @@ void scanNetworks() {
   
   networksJson += "]";
   Serial.println(networksJson);
-
-  delay(100);
 }
 
 void launchWebServer() {
