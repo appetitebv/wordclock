@@ -115,8 +115,13 @@ void scanNetworks() {
     networksJson += WiFi.RSSI(i);
     networksJson += ", \"hasPassword\": ";
     networksJson += (WiFi.encryptionType(i) != ENC_TYPE_NONE);
-    networksJson += "}";
+    networksJson += "},";
   }
+  if (n > 0) {
+    // remove last comma
+    networksJson.remove(networksJson.length()-1);
+  }
+  
   networksJson += "]";
   Serial.println(networksJson);
 
