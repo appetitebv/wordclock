@@ -2,6 +2,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
+#include <ESP8266mDNS.h>  
 
 ESP8266WebServer server(80);
 const byte DNS_PORT = 53;
@@ -37,9 +38,14 @@ void setup() {
   Serial.print("PASS: ");
   Serial.println(epass);
 
+  WiFi.mode(WIFI_STA);
   WiFi.begin(esid.c_str(), epass.c_str());
   if (testWifi()) {
     Serial.println("Wifi available");
+    launchWebServer();
+    if (MDNS.begin("wordclock")) { // Start the mDNS responder for wordclock.local
+      Serial.println("MDNS responder started");
+    }
     return;
   }
 
@@ -47,7 +53,7 @@ void setup() {
 }
 
 void loop() {
-  dnsServer.processNextRequest();  
+  //dnsServer.processNextRequest();  
   server.handleClient();
 }
 
@@ -71,7 +77,7 @@ void writeProm(String qsid, String qpass) {
 bool testWifi() {
   int c = 0;
   Serial.println("Waiting for Wifi to connect");
-  while ( c < 20 ) {
+  while ( c < 30 ) {
     if (WiFi.status() == WL_CONNECTED) { 
       return true;
     } 
@@ -88,7 +94,14 @@ void setupAP() {
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
 
-  delay(100);
+  WiFi.mode(WIFI_AP);
+  
+  WiFi.softAP(ssid, passphrase, 6);
+  dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
+  launchWebServer();
+}
+
+void scanNetworks() {
   int n = WiFi.scanNetworks();
   Serial.println("scan done");
 
@@ -101,19 +114,18 @@ void setupAP() {
     networksJson += WiFi.RSSI(i);
     networksJson += ", \"hasPassword\": ";
     networksJson += (WiFi.encryptionType(i) != ENC_TYPE_NONE);
-    networksJson += "}";
+    networksJson += "},";
   }
+  if (n > 0) {
+    // remove last comma
+    networksJson.remove(networksJson.length()-1);
+  }
+  
   networksJson += "]";
   Serial.println(networksJson);
-  
-  delay(100);
-
-  WiFi.softAP(ssid, passphrase, 6);
-  dnsServer.start(DNS_PORT, "wordclock.local", WiFi.softAPIP());
-  launchWeb();
 }
 
-void launchWeb() {
+void launchWebServer() {
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.print("Local IP: ");
@@ -128,17 +140,9 @@ void launchWeb() {
 
 void createWebServer()
 {
-  server.on("/", []() {
-      IPAddress ip = WiFi.softAPIP();
-      String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-      content = "<!DOCTYPE HTML>\r\n<html>Hello from ESP8266 at ";
-      content += ipStr;
-      content += "<form method='put' action='update'><label>SSID: </label><input name='ssid' length=32><input name='pass' length=64><input type='submit'></form>";
-      content += "</html>";
-      server.send(200, "text/html", content);  
-  });
-  
   server.on("/nearby-networks", []() {
+    scanNetworks();
+    
     server.send(200, "application/json", networksJson);
   });
   
