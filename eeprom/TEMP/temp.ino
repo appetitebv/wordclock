@@ -123,15 +123,15 @@ int display_1 [36] = {
   LED_72,LED_73,LED_74,LED_75
   };
 
-//Return the Matrix for each number
-int[][] getNumberForDisplay(int i) {
-  return numbers[i];
-}
-
 //get the matrix and put it on the display.
 void showNumber(int i) {
   int[][] matrix = getNumberForDisplay(i);
    turnLEDS_ON(matrix, display_1);
+}
+
+//Return the Matrix for each number
+int[][] getNumberForDisplay(int i) {
+  return numbers[i];
 }
 
 //Loop through matrix and turn actually LEDS on.
@@ -146,6 +146,8 @@ void turnLEDS_ON(int[][] matrix, int[] display) {
 
         //turn on the LED
         int LED_INDEX = display[index]
+
+        PUT_LED_ON.
         
       }
       index++;
