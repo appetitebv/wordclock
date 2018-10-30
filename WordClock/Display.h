@@ -1,5 +1,9 @@
 #ifndef Display_h
 #define Display_h
+
+#include "Config.h"
+extern struct ConfigStorageStruct ClockConfig;
+
 class Display {
   public:
     Display();

@@ -6,9 +6,6 @@
 #define PIXELS_COUNT 84 //  Total number of pixels
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXELS_COUNT, PIXELS_PIN, NEO_GRB + NEO_KHZ800);
 
-// TODO: Default / saved color -> get this from EEPROM
-uint32_t c = pixels.Color(127,127,127);
-
 Display::Display() {
   pixels.begin();
   pixels.clear();
@@ -40,7 +37,7 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
   for (uint8_t y=0;y<rows;y++) {
     for (uint8_t x=0;x<cols;x++) {
       if (Display::numberMapping[number][y][x] == 1) {
-        pixels.setPixelColor(Display::displayMapping[x+shiftX][y], c);
+        pixels.setPixelColor(Display::displayMapping[x+shiftX][y], ClockConfig.clockColor);
         Serial.print("X");
       } else {
         Serial.print(" ");
