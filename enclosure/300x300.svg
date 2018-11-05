@@ -85,7 +85,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.5"
-     inkscape:cx="310.32143"
+     inkscape:cx="580.32143"
      inkscape:cy="583.96296"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -103,7 +103,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -626,13 +626,6 @@
          id="path3899" />
     </g>
     <rect
-       style="clip-rule:evenodd;opacity:1;fill:none;fill-rule:evenodd;stroke:#808080;stroke-width:0.20000012;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-       id="rect4622"
-       width="111.99999"
-       height="111.99999"
-       x="11.147861"
-       y="175.25418" />
-    <rect
        style="clip-rule:evenodd;opacity:1;fill:none;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.20665541;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
        id="rect4855"
        width="123.99334"
@@ -855,17 +848,6 @@
        style="clip-rule:evenodd;fill:none;fill-rule:nonzero;stroke:#0000ff;stroke-width:0.20000012;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17499995px;line-height:0.82999998;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;clip-rule:evenodd;opacity:0.91000001;fill:#808080;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458341;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-       x="141.31557"
-       y="63.966232"
-       id="text1683"><tspan
-         sodipodi:role="line"
-         id="tspan1681"
-         x="141.31557"
-         y="63.966232"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17499995px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#808080;fill-opacity:1;stroke-width:0.26458341">Hole for LED wiring</tspan></text>
-    <text
-       xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17500114px;line-height:0.82999998;font-family:sans-serif;-inkscape-font-specification:sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;clip-rule:evenodd;fill:#808080;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458341;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
        x="167.40189"
        y="90.645157"
@@ -1004,18 +986,6 @@
          class="fil0 str1"
          sodipodi:nodetypes="ccccc" />
     </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17500114px;line-height:0.82999998;font-family:sans-serif;-inkscape-font-specification:sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;clip-rule:evenodd;fill:#808080;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458341;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-       x="-22.998564"
-       y="92.279518"
-       id="text1691"
-       transform="rotate(-90)"><tspan
-         sodipodi:role="line"
-         id="tspan1689"
-         x="-22.998564"
-         y="92.279518"
-         style="fill:#808080;fill-opacity:1;stroke-width:0.26458341">Hole for USB cable</tspan></text>
     <g
        style="clip-rule:evenodd;fill:none;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.00787402;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
        id="g13354"
@@ -1092,28 +1062,6 @@
        cx="-192.41957"
        cy="235.97569"
        style="clip-rule:evenodd;fill:none;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.20000012;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17500114px;line-height:0.82999998;font-family:sans-serif;-inkscape-font-specification:sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;clip-rule:evenodd;fill:#808080;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458341;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-       x="212.05623"
-       y="203.34338"
-       id="text3094"><tspan
-         sodipodi:role="line"
-         id="tspan3092"
-         x="212.05623"
-         y="203.34338"
-         style="fill:#808080;fill-opacity:1;stroke-width:0.26458341">Node MCU</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17500114px;line-height:0.82999998;font-family:sans-serif;-inkscape-font-specification:sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;clip-rule:evenodd;fill:#808080;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458341;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-       x="206.49998"
-       y="267.63715"
-       id="text3098"><tspan
-         sodipodi:role="line"
-         id="tspan3096"
-         x="206.49998"
-         y="267.63715"
-         style="fill:#808080;fill-opacity:1;stroke-width:0.26458341">RTC</tspan></text>
     <g
        style="clip-rule:evenodd;fill:none;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.00787402;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
        transform="matrix(0,25.4,-25.4,0,277.15948,-301.90901)"
