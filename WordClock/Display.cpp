@@ -61,8 +61,21 @@ uint8_t Display::numberMappingCols() {
   return cols;
 }
 
+uint8_t Display::NUMBER_load_progmem(unsigned char number) {
+  uint8_t READ_NUMBER[9][4];
+  // number 1-10
+  // r = row
+  for (unsigned char r=0; r<9; r++) {
+    for (unsigned char i=0; i<4; i++){
+      READ_NUMBER[r][i] = pgm_read_byte(&Display::numberMapping[number][r][i]);
+    } 
+  }
+  return READ_NUMBER;
+} 
+
+
 //  TODO: How to move this into PROGMEM?
-uint8_t Display::displayMapping[9][9] = {
+uint8_t Display::displayMapping[9][9] PROGMEM = {
   { 0, 1, 2, 3, 4, 5, 6, 7, 8},
   {17,16,15,14,13,12,11,10, 9},
   {18,19,20,21,22,23,24,25,26},
@@ -74,8 +87,8 @@ uint8_t Display::displayMapping[9][9] = {
   {72,73,74,75,76,77,78,79,80}
 };
 
-//  TODO: How to move this into PROGMEM?
-uint8_t Display::numberMapping[10][9][4] = {
+
+uint8_t Display::numberMapping[10][9][4] PROGMEM = {
   { //0
     {1,1,1,1},
     {1,1,1,1},
@@ -184,4 +197,3 @@ uint8_t Display::numberMapping[10][9][4] = {
     {1,1,1,1}
   }
 };
-
