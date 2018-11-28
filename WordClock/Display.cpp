@@ -61,20 +61,22 @@ uint8_t Display::numberMappingCols() {
   return cols;
 }
 
-uint8_t Display::NUMBER_load_progmem(unsigned char number) {
-  uint8_t READ_NUMBER[9][4];
+
+struct NUMBER_IN_DISPLAY Display::NUMBER_load_progmem(uint8_t number) {
+
+  struct NUMBER_IN_DISPLAY n;
+  
   // number 1-10
-  // r = row
-  for (unsigned char r=0; r<9; r++) {
-    for (unsigned char i=0; i<4; i++){
-      READ_NUMBER[r][i] = pgm_read_byte(&Display::numberMapping[number][r][i]);
+  // r = rows
+  for (unsigned char r=0; r<N_HEIGHT; r++) {
+    for (unsigned char i=0; i<N_WIDTH; i++){
+      n.matrix[r][i] = pgm_read_byte(&Display::numberMapping[number][r][i]);
     } 
   }
-  return READ_NUMBER;
+  return n;
 } 
 
 
-//  TODO: How to move this into PROGMEM?
 uint8_t Display::displayMapping[9][9] PROGMEM = {
   { 0, 1, 2, 3, 4, 5, 6, 7, 8},
   {17,16,15,14,13,12,11,10, 9},
@@ -88,7 +90,7 @@ uint8_t Display::displayMapping[9][9] PROGMEM = {
 };
 
 
-uint8_t Display::numberMapping[10][9][4] PROGMEM = {
+uint8_t Display::numberMapping[10][N_HEIGHT][N_WIDTH] PROGMEM = {
   { //0
     {1,1,1,1},
     {1,1,1,1},
