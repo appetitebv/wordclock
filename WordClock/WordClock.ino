@@ -1,21 +1,37 @@
 #include "Display.h"
 
+Display display;
+  
 void setup() {
   Serial.begin(115200);
-  
-  Serial.println("Create display");
-  Display display;
-  
-  Serial.println("Display temperatures");
-  display.displayTemperature(01);
-  display.displayTemperature(23);
-  display.displayTemperature(45);
-  display.displayTemperature(67);
-  display.displayTemperature(89);
-  display.displayTemperature(10);
+  display.setup();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
+//  Serial.println("Display temperatures");
+//  display.displayTemperature(01);
+//  delay(500);
+//  display.displayTemperature(23);
+//  delay(500);
+//  display.displayTemperature(45);
+//  delay(500);
+//  display.displayTemperature(67);
+//  delay(500);
+//  display.displayTemperature(89);
+//  delay(500);
+//  display.displayTemperature(10);
+//  delay(500);
+  demoClock();
 }
+
+void demoClock() {
+  for(int hours=0;hours<24;hours++) {
+    for(int minutes=0;minutes<60;minutes++) {
+      display.displayTime(hours,minutes);
+      delay(500);
+    }
+  }
+}
+

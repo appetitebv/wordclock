@@ -5,7 +5,7 @@ ConfigStorageStruct ClockConfig = {
   CONFIG_VERSION,
   "",
   "",
-  0,
+  8355711,
   20,
   170
 };
