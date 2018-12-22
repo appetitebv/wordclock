@@ -1,6 +1,9 @@
 #ifndef Config_h
 #define Config_h
 
+#include <stdint.h>
+#include <Arduino.h>
+
 #define CONFIG_VERSION "001"
 #define CONFIG_START 0
 
@@ -16,6 +19,7 @@ struct ConfigStorageStruct {
 class Config {
   public:
     Config();
+    void setup();
   private:
     void read();
     void save();

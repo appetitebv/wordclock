@@ -1,10 +1,15 @@
 #include "Display.h"
+#include "Clock.h"
 
+Config config;
 Display display;
+Clock clock;
   
 void setup() {
   Serial.begin(115200);
+  config.setup();
   display.setup();
+  clock.setup();
 }
 
 void loop() {
