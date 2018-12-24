@@ -23,3 +23,17 @@ void Clock::setTime(uint8_t hour, uint8_t minute, uint8_t second) {
   RTC.setSecond(second);
 }
 
+uint8_t Clock::getHour() {
+  bool h12;     // false = 24h, true = 12h
+  bool PM_time;
+  return RTC.getHour(h12, PM_time);
+}
+
+uint8_t Clock::getMinute() {
+  return RTC.getMinute();
+}
+
+uint8_t Clock::getSecond() {
+  return RTC.getSecond();
+}
+

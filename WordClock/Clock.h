@@ -13,5 +13,8 @@ class Clock {
     Clock();
     void setup();
     void setTime(uint8_t hour, uint8_t minute, uint8_t second);
+    uint8_t getHour();
+    uint8_t getMinute();
+    uint8_t getSecond();
 };
 #endif
