@@ -3,11 +3,11 @@
 
 ConfigStorageStruct ClockConfig = {
   CONFIG_VERSION,
-  "",
-  "",
-  8355711,
-  20,
-  170
+  CONFIG_SSID,
+  CONFIG_PWD,
+  CONFIG_COLOR,
+  CONFIG_BRIGHTNESS_NIGHT,
+  CONFIG_BRIGHTNESS_DAY
 };
 
 Config::Config() {
