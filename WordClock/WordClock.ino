@@ -1,26 +1,36 @@
 #include "Display.h"
 #include "Clock.h"
+#include "API.h"
 
 Config config;
 Display display;
 Clock clock;
+API api;
   
 void setup() {
   Serial.begin(115200);
   config.setup();
   display.setup();
   clock.setup();
+  api.setup();
   clock.setTime(19,19,0);
+  printTime();
+  api.sync(&clock);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-
+void printTime() {
   Serial.print(clock.getHour());
   Serial.print(":");
   Serial.print(clock.getMinute());
   Serial.print(":");
   Serial.println(clock.getSecond());
+}
+
+void loop() {
+  api.loop();
+  // put your main code here, to run repeatedly:
+
+  printTime();
   delay(10000);
 
 //  Serial.println("Display temperatures");
