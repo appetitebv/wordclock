@@ -1,7 +1,5 @@
 #include "Display.h"
 
-#define PIXELS_PIN 2 // D4 on NodeMCU
-#define PIXELS_COUNT 85 //  Total number of pixels
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXELS_COUNT, PIXELS_PIN, NEO_GRB + NEO_KHZ800);
 
 Display::Display() {
