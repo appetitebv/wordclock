@@ -14,7 +14,7 @@
 #define CONFIG_START 0
 
 struct ConfigStorageStruct {
-  char version[3];
+  char version[4];
   char ssid[24];
   char pwd[16];
   uint32_t clockColor;
