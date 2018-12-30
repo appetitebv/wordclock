@@ -40,7 +40,10 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
   for (uint8_t y=0;y<rows;y++) {
     for (uint8_t x=0;x<cols;x++) {
       if (Display::numberMapping[number][y][x] == 1) {
-        pixels.setPixelColor(Display::displayMapping[x+shiftX][y], ClockConfig.clockColor);
+
+        uint8_t pixel = pgm_read_byte(&Display::displayMapping[x+shiftX][y]);
+        
+        pixels.setPixelColor(pixel, ClockConfig.clockColor);
         Serial.print("X");
       } else {
         Serial.print(" ");
@@ -51,15 +54,24 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
   pixels.show();
 }
 
+
+/**
+ * Reading a word from the PROGMEM
+ */
 void Display::displayWordAt(uint8_t index) {
-  for (uint8_t i=0;i< sizeof Display::wordMapping[index];i++) {
-    uint8_t pixel = Display::wordMapping[index][i];
+
+  //size is always 5, hardcodede for now
+  for (uint8_t i=0; i < 5; i++) {
+    uint8_t pixel = pgm_read_byte(&Display::wordMapping[index][i]);
     if (pixel != 99) {
       pixels.setPixelColor(pixel, ClockConfig.clockColor);
     }
   }
 }
 
+/**
+ * Display the time on the display
+ */
 void Display::displayTime(uint8_t hours, uint8_t minutes) {
   pixels.clear();
 
@@ -149,7 +161,10 @@ uint8_t Display::numberMappingCols() {
   return cols;
 }
 
-
+/**
+ * Function that shows a number from PROGMEM on the display
+ * - Used for displaying temperature
+ */
 struct NUMBER_IN_DISPLAY Display::NUMBER_load_progmem(uint8_t number) {
 
   struct NUMBER_IN_DISPLAY n;
@@ -164,7 +179,6 @@ struct NUMBER_IN_DISPLAY Display::NUMBER_load_progmem(uint8_t number) {
   return n;
 }
 
-// TODO: How to move this to PROGMEM?
 uint8_t Display::wordMapping[23][6] PROGMEM = {
   // Enter 99 to ignore
   
