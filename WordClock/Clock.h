@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <DS3231.h> // https://github.com/NorthernWidget/DS3231
-#include <Wire.h> // Connected via I2C
+#include <Wire.h> // Connected via I2C-bus on pins D1 (GPIO5/SCL) and D2 (GPIO4/SDA)
 
 //#include "Config.h"
 //extern struct ConfigStorageStruct ClockConfig;

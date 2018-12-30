@@ -10,10 +10,18 @@ void setup() {
   config.setup();
   display.setup();
   clock.setup();
+  clock.setTime(19,19,0);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+
+  Serial.print(clock.getHour());
+  Serial.print(":");
+  Serial.print(clock.getMinute());
+  Serial.print(":");
+  Serial.println(clock.getSecond());
+  delay(10000);
 
 //  Serial.println("Display temperatures");
 //  display.displayTemperature(01);
@@ -28,7 +36,7 @@ void loop() {
 //  delay(500);
 //  display.displayTemperature(10);
 //  delay(500);
-  demoClock();
+//  demoClock();
 }
 
 void demoClock() {
