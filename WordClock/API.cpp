@@ -35,6 +35,7 @@ void API::sync(Clock *clock) {
   
   http.begin("http://wordclock.nl/api/status");
   http.addHeader("Content-Type", "application/json");
+  http.setTimeout(3000); // just in case
   int httpCode = http.POST(output);
   Serial.printf("[HTTP] POST... code: %d\n", httpCode);
   if (httpCode == HTTP_CODE_OK) {
@@ -56,10 +57,14 @@ void API::sync(Clock *clock) {
       uint8_t hour = ((currentTime[11]-'0')*10)+(currentTime[12]-'0');
       uint8_t minute = ((currentTime[14]-'0')*10)+(currentTime[15]-'0');
       uint8_t second = ((currentTime[17]-'0')*10)+(currentTime[18]-'0');
+      
       clock->setTime(hour, minute, second);
     } else {
       Serial.println("Decoding json failed");
     }
+  } else {
+    // Retry
+    this->sync(clock);
   }
   http.end();
 }
