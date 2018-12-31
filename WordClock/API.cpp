@@ -44,7 +44,7 @@ void API::sync(Clock *clock) {
     Serial.println(response);
 
     // Allocate decoding buffer
-    const size_t decodeSize = JSON_OBJECT_SIZE(4) + 190;
+    const size_t decodeSize = JSON_OBJECT_SIZE(4) + 220;
     DynamicJsonBuffer decodeBuffer(decodeSize);
 
     // Parse the response payload
@@ -62,11 +62,17 @@ void API::sync(Clock *clock) {
     } else {
       Serial.println("Decoding json failed");
     }
-  } else {
-    // Retry
-    this->sync(clock);
   }
   http.end();
+
+  // Retry
+  if (httpCode != HTTP_CODE_OK) {
+    // Double check if WiFi is working
+    if (!this->wifiConnected()) {
+      this->connectToWifi();
+    }
+    this->sync(clock);
+  }
 }
 
 // Connect to WiFi
