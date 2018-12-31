@@ -2,6 +2,10 @@
 
 DS3231 RTC;
 
+Time LastDisplayed = {
+  0,0
+};
+
 Clock::Clock() {
   Serial.println("Clock::Clock");
   this->setup();
@@ -15,6 +19,17 @@ void Clock::setup() {
 
   // Set to 24h mode
   RTC.setClockMode(false);
+}
+
+void Clock::loop(Display *display) {
+
+  Time CurrentTime = this->getTime();
+  
+  if (CurrentTime.hour != LastDisplayed.hour || CurrentTime.minute != LastDisplayed.minute) {
+    display->displayTime(CurrentTime.hour, CurrentTime.minute);
+  }
+
+  LastDisplayed = CurrentTime;
 }
 
 void Clock::setTime(uint8_t hour, uint8_t minute, uint8_t second) {
@@ -31,6 +46,14 @@ uint8_t Clock::getHour() {
 
 uint8_t Clock::getMinute() {
   return RTC.getMinute();
+}
+
+Time Clock::getTime() {
+  Time CurrentTime {
+    this->getHour(),
+    this->getMinute()
+  };
+  return CurrentTime;
 }
 
 uint8_t Clock::getSecond() {
