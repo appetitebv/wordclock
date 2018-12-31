@@ -7,6 +7,7 @@ Display::Display() {
 
 void Display::setup() {
   pixels.begin();
+  pixels.setBrightness(ClockConfig.clockBrightnessNight); // Just to be sure as default, this will be updated when sunrise/sunset is available.
   pixels.clear();
 }
 
