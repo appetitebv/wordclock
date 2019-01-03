@@ -1,9 +1,5 @@
-#include <stdint.h>
 #include "Display.h"
-#include <Adafruit_NeoPixel.h>
 
-#define PIXELS_PIN 2 // D4 on NodeMCU
-#define PIXELS_COUNT 85 //  Total number of pixels
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXELS_COUNT, PIXELS_PIN, NEO_GRB + NEO_KHZ800);
 
 Display::Display() {
@@ -11,6 +7,7 @@ Display::Display() {
 
 void Display::setup() {
   pixels.begin();
+  pixels.setBrightness(ClockConfig.clockBrightnessNight); // Just to be sure as default, this will be updated when sunrise/sunset is available.
   pixels.clear();
 }
 
@@ -60,66 +57,66 @@ void Display::displayWordAt(uint8_t index) {
   }
 }
 
-void Display::displayTime(uint8_t hours, uint8_t minutes) {
+void Display::displayTime(uint8_t hour, uint8_t minute) {
   pixels.clear();
 
   // 10:20 => tien voor half ELF
-  if (minutes >= 20) {
-    hours = hours+1;
+  if (minute >= 20) {
+    hour = hour+1;
   }
 
-  // 12 hours clock
-  hours = hours%12;
+  // 12 hour clock
+  hour = hour%12;
 
-  // Hours
-  if (hours == 0) {
+  // hour
+  if (hour == 0) {
     this->displayWordAt(11);
-  } else if (hours >= 1 && hours <= 11) {
-    this->displayWordAt(hours-1);
+  } else if (hour >= 1 && hour <= 11) {
+    this->displayWordAt(hour-1);
   }
 
   // 
-  if (minutes >= 0 && minutes < 5) {
+  if (minute >= 0 && minute < 5) {
     this->displayWordAt(18); // Uur
-  } else if (minutes >= 5 && minutes < 10) {
+  } else if (minute >= 5 && minute < 10) {
     this->displayWordAt(12); // Vijf
     this->displayWordAt(16); // Over
-  } else if (minutes >= 10 && minutes < 15) {
+  } else if (minute >= 10 && minute < 15) {
     this->displayWordAt(14); // Tien
     this->displayWordAt(16); // Over
-  } else if (minutes >= 15 && minutes < 20) {
+  } else if (minute >= 15 && minute < 20) {
     this->displayWordAt(13); // Kwart
     this->displayWordAt(16); // Over
-  } else if (minutes >= 20 && minutes < 25) {
+  } else if (minute >= 20 && minute < 25) {
     this->displayWordAt(14); // Tien
     this->displayWordAt(15); // Voor
     this->displayWordAt(17); // Half
-  } else if (minutes >= 25 && minutes < 30) {
+  } else if (minute >= 25 && minute < 30) {
     this->displayWordAt(12); // Vijf
     this->displayWordAt(15); // Voor
     this->displayWordAt(17); // Half
-  } else if (minutes >= 30 && minutes < 35) {
+  } else if (minute >= 30 && minute < 35) {
     this->displayWordAt(17); // Half
-  } else if (minutes >= 35 && minutes < 40) {
+  } else if (minute >= 35 && minute < 40) {
     this->displayWordAt(12); // Vijf
     this->displayWordAt(16); // Over
     this->displayWordAt(17); // Half
-  } else if (minutes >= 40 && minutes < 45) {
+  } else if (minute >= 40 && minute < 45) {
     this->displayWordAt(14); // Tien
     this->displayWordAt(16); // Over
     this->displayWordAt(17); // Half
-  } else if (minutes >= 45 && minutes < 50) {
+  } else if (minute >= 45 && minute < 50) {
     this->displayWordAt(13); // Kwart
     this->displayWordAt(15); // Voor
-  } else if (minutes >= 50 && minutes < 55) {
+  } else if (minute >= 50 && minute < 55) {
     this->displayWordAt(14); // Tien
     this->displayWordAt(15); // Voor
-  } else if (minutes >= 55 && minutes < 60) {
+  } else if (minute >= 55 && minute < 60) {
     this->displayWordAt(12); // Vijf
     this->displayWordAt(15); // Voor
   }
 
-  switch (minutes%5) {
+  switch (minute%5) {
     case 1: 
       this->displayWordAt(19); // 1
       break;
@@ -153,13 +150,13 @@ uint8_t Display::numberMappingCols() {
 uint8_t Display::wordMapping[23][6] = {
   // Enter 99 to ignore
   
-  // Hours
+  // hour
   {74,75,76,99,99,99}, // Een
   {72,73,74,75,99,99}, // Twee
   {36,37,38,39,99,99}, // Drie
   {71,70,69,68,99,99}, // Vier
   {66,65,64,63,99,99}, // Vijf
-  {29,28,28,99,99,99}, // Zes
+  {29,28,27,99,99,99}, // Zes
   {54,55,56,57,58,99}, // Zeven
   {41,42,43,44,99,99}, // Acht
   {50,49,48,47,46,99}, // Negen
@@ -176,7 +173,7 @@ uint8_t Display::wordMapping[23][6] = {
   {23,24,25,26,99,99}, // Half
   {78,79,80,99,99,99}, // Uur
 
-  // Minutes
+  // minute
   {84,99,99,99,99,99}, // 1
   {84,83,99,99,99,99}, // 2
   {84,83,82,99,99,99}, // 3
