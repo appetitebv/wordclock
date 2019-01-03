@@ -1,12 +1,20 @@
 #ifndef Display_h
 #define Display_h
 
+#include <stdint.h>
+#include <Arduino.h>
+
 #include "Config.h"
 extern struct ConfigStorageStruct ClockConfig;
 
 //Number height and width of pixels
 #define N_HEIGHT 9
 #define N_WIDTH 4
+
+#define PIXELS_PIN 2 // D4 on NodeMCU
+#define PIXELS_COUNT 85 //  Total number of pixels
+
+#include <Adafruit_NeoPixel.h>
 
 class Display {
   

@@ -1,10 +1,19 @@
 #include "Display.h"
+#include "Clock.h"
+#include "API.h"
 
+Config config;
 Display display;
+Clock clock;
+API api;
   
 void setup() {
   Serial.begin(115200);
+  config.setup();
   display.setup();
+  clock.setup();
+  api.setup();
+  api.sync(&clock);
 }
 
 void loop() {
@@ -14,29 +23,8 @@ void loop() {
   number = display.NUMBER_load_progmem(8);
   print_number(number);
 
-//  Serial.println("Display temperatures");
-//  display.displayTemperature(01);
-//  delay(500);
-//  display.displayTemperature(23);
-//  delay(500);
-//  display.displayTemperature(45);
-//  delay(500);
-//  display.displayTemperature(67);
-//  delay(500);
-//  display.displayTemperature(89);
-//  delay(500);
-//  display.displayTemperature(10);
-//  delay(500);
-  demoClock();
-}
-
-void demoClock() {
-  for(int hours=0;hours<24;hours++) {
-    for(int minutes=0;minutes<60;minutes++) {
-      display.displayTime(hours,minutes);
-      delay(500);
-    }
-  }
+  api.loop();
+  clock.loop(&display);
 }
 
 static void print_number(struct NUMBER_IN_DISPLAY number) {
