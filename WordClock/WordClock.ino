@@ -17,21 +17,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  Serial.println("Reading from PROGMEM");
-  struct NUMBER_IN_DISPLAY number;
-  number = display.NUMBER_load_progmem(8);
-  print_number(number);
-
   api.loop();
   clock.loop(&display);
-}
-
-static void print_number(struct NUMBER_IN_DISPLAY number) {
-  int i, j;
-  for (i = 0; i < 9; i++) {
-    for (j = 0; j < 4; j++)
-    Serial.print(number.matrix[i][j]);
-    Serial.print("\n");
-  }
 }

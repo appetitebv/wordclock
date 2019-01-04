@@ -16,12 +16,10 @@ void Display::displayTemperature(uint8_t temperature) {
   if (temperature < 100) {
     uint8_t lastDigit = temperature % 10;
     uint8_t firstDigit = (temperature-lastDigit)/10;
-    Serial.print("First digit:");
-    Serial.println(firstDigit);
-    Serial.print("Last digit:");
-    Serial.println(lastDigit);
+    pixels.clear();
     this->displayNumberAtPosition(firstDigit, 0);
     this->displayNumberAtPosition(lastDigit, 1);
+    pixels.show();
   }
 }
 
@@ -31,24 +29,15 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
   uint8_t cols = Display::numberMappingCols();
   uint8_t rows = Display::numberMappingRows();
   uint8_t shiftX = position*cols+position*1;
-  Serial.print("ShiftX:");
-  Serial.println(shiftX);
-  pixels.clear();
   for (uint8_t y=0;y<rows;y++) {
     for (uint8_t x=0;x<cols;x++) {
-      if (Display::numberMapping[number][y][x] == 1) {
-
-        uint8_t pixel = pgm_read_byte(&Display::displayMapping[x+shiftX][y]);
-        
+      uint8_t value = pgm_read_byte(&Display::numberMapping[number][y][x]);
+      if (value == 1) {
+        uint8_t pixel = pgm_read_byte(&Display::displayMapping[y][x+shiftX]);
         pixels.setPixelColor(pixel, ClockConfig.clockColor);
-        Serial.print("X");
-      } else {
-        Serial.print(" ");
       }
     }
-    Serial.println("");
   }
-  pixels.show();
 }
 
 
@@ -69,7 +58,7 @@ void Display::displayWordAt(uint8_t index) {
 /**
  * Display the time on the display
  */
-void Display::displayTime(uint8_t hours, uint8_t minutes) {
+void Display::displayTime(uint8_t hour, uint8_t minute) {
   pixels.clear();
 
   // 10:20 => tien voor half ELF
@@ -158,24 +147,6 @@ uint8_t Display::numberMappingCols() {
   return cols;
 }
 
-/**
- * Function that shows a number from PROGMEM on the display
- * - Used for displaying temperature
- */
-struct NUMBER_IN_DISPLAY Display::NUMBER_load_progmem(uint8_t number) {
-
-  struct NUMBER_IN_DISPLAY n;
-  
-  // number 1-10
-  // r = rows
-  for (unsigned char r=0; r<N_HEIGHT; r++) {
-    for (unsigned char i=0; i<N_WIDTH; i++){
-      n.matrix[r][i] = pgm_read_byte(&Display::numberMapping[number][r][i]);
-    } 
-  }
-  return n;
-}
-
 uint8_t Display::wordMapping[23][6] PROGMEM = {
   // Enter 99 to ignore
   
@@ -222,7 +193,7 @@ uint8_t Display::displayMapping[9][9] PROGMEM = {
 };
 
 
-uint8_t Display::numberMapping[10][N_HEIGHT][N_WIDTH] PROGMEM = {
+uint8_t Display::numberMapping[10][9][4] PROGMEM = {
   { //0
     {1,1,1,1},
     {1,1,1,1},
