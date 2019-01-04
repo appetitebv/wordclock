@@ -1,11 +1,13 @@
 #include "Display.h"
 #include "Clock.h"
 #include "API.h"
+#include "SunsetSunrise.h"
 
 Config config;
 Display display;
 Clock clock;
 API api;
+SunsetSunrise sunsetSunrise;
   
 void setup() {
   Serial.begin(115200);
@@ -13,10 +15,13 @@ void setup() {
   display.setup();
   clock.setup();
   api.setup();
-  api.sync(&clock);
+  sunsetSunrise.setup();
+  
+  api.sync(&clock, &sunsetSunrise);
 }
 
 void loop() {
   api.loop();
   clock.loop(&display);
+  sunsetSunrise.loop(&display, &clock);
 }
