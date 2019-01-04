@@ -13,6 +13,7 @@ extern struct ConfigStorageStruct ClockConfig;
 #include <Adafruit_NeoPixel.h>
 
 class Display {
+  
   public:
     Display();
     void setup();
@@ -27,4 +28,5 @@ class Display {
     static uint8_t numberMappingCols();
     static uint8_t wordMapping[23][6];
 };
+
 #endif

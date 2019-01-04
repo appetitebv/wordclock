@@ -16,12 +16,10 @@ void Display::displayTemperature(uint8_t temperature) {
   if (temperature < 100) {
     uint8_t lastDigit = temperature % 10;
     uint8_t firstDigit = (temperature-lastDigit)/10;
-    Serial.print("First digit:");
-    Serial.println(firstDigit);
-    Serial.print("Last digit:");
-    Serial.println(lastDigit);
+    pixels.clear();
     this->displayNumberAtPosition(firstDigit, 0);
     this->displayNumberAtPosition(lastDigit, 1);
+    pixels.show();
   }
 }
 
@@ -31,32 +29,35 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
   uint8_t cols = Display::numberMappingCols();
   uint8_t rows = Display::numberMappingRows();
   uint8_t shiftX = position*cols+position*1;
-  Serial.print("ShiftX:");
-  Serial.println(shiftX);
-  pixels.clear();
   for (uint8_t y=0;y<rows;y++) {
     for (uint8_t x=0;x<cols;x++) {
-      if (Display::numberMapping[number][y][x] == 1) {
-        pixels.setPixelColor(Display::displayMapping[x+shiftX][y], ClockConfig.clockColor);
-        Serial.print("X");
-      } else {
-        Serial.print(" ");
+      uint8_t value = pgm_read_byte(&Display::numberMapping[number][y][x]);
+      if (value == 1) {
+        uint8_t pixel = pgm_read_byte(&Display::displayMapping[y][x+shiftX]);
+        pixels.setPixelColor(pixel, ClockConfig.clockColor);
       }
     }
-    Serial.println("");
   }
-  pixels.show();
 }
 
+
+/**
+ * Reading a word from the PROGMEM
+ */
 void Display::displayWordAt(uint8_t index) {
-  for (uint8_t i=0;i< sizeof Display::wordMapping[index];i++) {
-    uint8_t pixel = Display::wordMapping[index][i];
+
+  //size is always 5, hardcodede for now
+  for (uint8_t i=0; i < 5; i++) {
+    uint8_t pixel = pgm_read_byte(&Display::wordMapping[index][i]);
     if (pixel != 99) {
       pixels.setPixelColor(pixel, ClockConfig.clockColor);
     }
   }
 }
 
+/**
+ * Display the time on the display
+ */
 void Display::displayTime(uint8_t hour, uint8_t minute) {
   pixels.clear();
 
@@ -146,8 +147,7 @@ uint8_t Display::numberMappingCols() {
   return cols;
 }
 
-// TODO: How to move this to PROGMEM?
-uint8_t Display::wordMapping[23][6] = {
+uint8_t Display::wordMapping[23][6] PROGMEM = {
   // Enter 99 to ignore
   
   // hour
@@ -180,8 +180,7 @@ uint8_t Display::wordMapping[23][6] = {
   {84,83,82,81,99,99}  // 4
 };
 
-//  TODO: How to move this into PROGMEM?
-uint8_t Display::displayMapping[9][9] = {
+uint8_t Display::displayMapping[9][9] PROGMEM = {
   { 0, 1, 2, 3, 4, 5, 6, 7, 8},
   {17,16,15,14,13,12,11,10, 9},
   {18,19,20,21,22,23,24,25,26},
@@ -193,8 +192,8 @@ uint8_t Display::displayMapping[9][9] = {
   {72,73,74,75,76,77,78,79,80}
 };
 
-//  TODO: How to move this into PROGMEM?
-uint8_t Display::numberMapping[10][9][4] = {
+
+uint8_t Display::numberMapping[10][9][4] PROGMEM = {
   { //0
     {1,1,1,1},
     {1,1,1,1},
@@ -303,4 +302,3 @@ uint8_t Display::numberMapping[10][9][4] = {
     {1,1,1,1}
   }
 };
-

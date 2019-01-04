@@ -20,4 +20,3 @@ void loop() {
   api.loop();
   clock.loop(&display);
 }
-
