@@ -137,6 +137,11 @@ void Display::displayTime(uint8_t hour, uint8_t minute) {
   pixels.show();
 }
 
+void Display::setBrightness(uint8_t brightness) {
+  pixels.setBrightness(brightness);
+  pixels.show();
+}
+
 uint8_t Display::numberMappingRows() {
   uint8_t rows = sizeof Display::numberMapping[0] / sizeof Display::numberMapping[0][0];
   return rows;

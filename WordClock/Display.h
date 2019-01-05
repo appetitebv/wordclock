@@ -19,6 +19,7 @@ class Display {
     void setup();
     void displayTemperature(uint8_t temperature);
     void displayTime(uint8_t hour, uint8_t minute);
+    void setBrightness(uint8_t brightness);
   private:
     void displayNumberAtPosition(uint8_t number, uint8_t position);
     void displayWordAt(uint8_t index);
