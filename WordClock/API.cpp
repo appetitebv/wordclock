@@ -1,7 +1,6 @@
 #include "API.h"
 
 HTTPClient http;
-Wifi wifi;
 
 Time LastSync = {
   0,0,0,0,0,0
@@ -12,7 +11,6 @@ API::API() {
 
 void API::setup() {
   Serial.println("API::setup");
-  wifi.setup();
 }
 
 void API::loop(Clock *clock, SunsetSunrise *sunsetSunrise) {
@@ -90,15 +88,6 @@ void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
     }
   }
   http.end();
-
-  // Retry
-  if (httpCode != HTTP_CODE_OK) {
-    // Double check if WiFi is working
-    if (!wifi.connected()) {
-      wifi.connect();
-    }
-    this->sync(clock, sunsetSunrise);
-  }
 }
 
 void API::updateFirmware(const char* host, const char* path) {

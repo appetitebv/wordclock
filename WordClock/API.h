@@ -6,7 +6,6 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 
-#include "Wifi.h"
 #include "Clock.h"
 #include "SunsetSunrise.h"
 #include "Config.h"
