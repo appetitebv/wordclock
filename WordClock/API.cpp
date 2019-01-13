@@ -1,6 +1,7 @@
 #include "API.h"
 
 HTTPClient http;
+Wifi wifi;
 
 Time LastSync = {
   0,0,0,0,0,0
@@ -11,14 +12,10 @@ API::API() {
 
 void API::setup() {
   Serial.println("API::setup");
-  this->connectToWifi();
+  wifi.setup();
 }
 
 void API::loop(Clock *clock, SunsetSunrise *sunsetSunrise) {
-  if (this->wifiConnected() == false) {
-    this->connectToWifi();
-  }
-  
   // Sync at 01:00 AM
   Time time = clock->getTime();
   if (LastSync.day != time.day && time.hour == 1 && time.minute == 0) {
@@ -97,43 +94,20 @@ void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
   // Retry
   if (httpCode != HTTP_CODE_OK) {
     // Double check if WiFi is working
-    if (!this->wifiConnected()) {
-      this->connectToWifi();
+    if (!wifi.connected()) {
+      wifi.connect();
     }
     this->sync(clock, sunsetSunrise);
   }
 }
 
-// Connect to WiFi
-void API::connectToWifi() {
-  WiFi.begin(ClockConfig.ssid, ClockConfig.pwd);
-  while (WiFi.status() != WL_CONNECTED) {
-    // TODO: Print some status to the display?
-    Serial.print(".");
-    delay(500);
-  }
-  Serial.println("");
-  Serial.println("WiFi Connected");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP()); 
-}
-
 void API::updateFirmware(const char* host, const char* path) {
-  Serial.print("Updating firmware from host: ");
-  Serial.print(host);
-  Serial.print(" with path: ");
-  Serial.println(path);
-  ESPhttpUpdate.update(host, 80, path);
-  Serial.println("Done updating.");
-}
-
-// Verify that WiFi is connected
-bool API::wifiConnected() {
-  if (WiFi.status() != WL_CONNECTED) {
-    WiFi.disconnect();
-    return false;
-  }
-  return true;
+    Serial.print("Updating firmware from host: ");
+    Serial.print(host);
+    Serial.print(" with path: ");
+    Serial.println(path);
+    ESPhttpUpdate.update(host, 80, path);
+    Serial.println("Done updating.");
 }
 
 Time API::parseTime(const char *string) {
@@ -153,4 +127,3 @@ Time API::parseTime(const char *string) {
   };
   return time;
 }
-
