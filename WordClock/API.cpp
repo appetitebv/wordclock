@@ -15,7 +15,7 @@ void API::loop() {
   wifi.loop();
 }
 
-void API::sync(Clock *clock) {
+void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
   // Allocate json buffer
   const int encodeCapacity = JSON_OBJECT_SIZE(3);
   StaticJsonBuffer<encodeCapacity> encodeBuffer;
@@ -50,14 +50,21 @@ void API::sync(Clock *clock) {
     JsonObject& payload = decodeBuffer.parseObject(response);
 
     if (payload.success()) {
-      auto currentTime = payload["currentTime"].as<char*>();
+      // Parse current time
+      auto currentTimeString = payload["currentTime"].as<char*>();
+      Time currentTime = this->parseTime(currentTimeString);
+      clock->setTime(currentTime);
+
+      // Parse sunrise
+      auto sunriseString = payload["sunrise"].as<char*>();
+      Time sunrise = this->parseTime(sunriseString);
+
+      // Parse sunset
+      auto sunsetString = payload["sunset"].as<char*>();
+      Time sunset = this->parseTime(sunsetString);
+
+      sunsetSunrise->set(sunrise, sunset);
       
-      // Extract the time
-      uint8_t hour = ((currentTime[11]-'0')*10)+(currentTime[12]-'0');
-      uint8_t minute = ((currentTime[14]-'0')*10)+(currentTime[15]-'0');
-      uint8_t second = ((currentTime[17]-'0')*10)+(currentTime[18]-'0');
-      
-      clock->setTime(hour, minute, second);
     } else {
       Serial.println("Decoding json failed");
     }
@@ -70,6 +77,18 @@ void API::sync(Clock *clock) {
     if (!wifi.connected()) {
       wifi.connect();
     }
-    this->sync(clock);
+    this->sync(clock, sunsetSunrise);
   }
+}
+
+Time API::parseTime(const char *string) {
+  uint8_t hour = ((string[11]-'0')*10)+(string[12]-'0');
+  uint8_t minute = ((string[14]-'0')*10)+(string[15]-'0');
+  uint8_t second = ((string[17]-'0')*10)+(string[18]-'0');
+  Time time {
+    hour,
+    minute,
+    second
+  };
+  return time;
 }

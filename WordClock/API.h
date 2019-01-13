@@ -7,6 +7,7 @@
 #include "Wifi.h"
 
 #include "Clock.h"
+#include "SunsetSunrise.h"
 #include "Config.h"
 extern struct ConfigStorageStruct ClockConfig;
 
@@ -15,6 +16,8 @@ class API {
     API();
     void setup();
     void loop();
-    void sync(Clock *clock);
+    void sync(Clock *clock, SunsetSunrise *sunsetSunrise);
+  private:
+    Time parseTime(const char *string);
 };
 #endif

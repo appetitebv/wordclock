@@ -9,6 +9,7 @@
 struct Time {
   uint8_t hour;
   uint8_t minute;
+  uint8_t second;
 };
 
 class Clock {
@@ -16,7 +17,7 @@ class Clock {
     Clock();
     void setup();
     void loop(Display *display);
-    void setTime(uint8_t hour, uint8_t minute, uint8_t second);
+    void setTime(Time time);
     Time getTime();
   private:
     uint8_t getHour();
