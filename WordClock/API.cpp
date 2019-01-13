@@ -1,19 +1,18 @@
 #include "API.h"
 
 HTTPClient http;
+Wifi wifi;
 
 API::API() {
 }
 
 void API::setup() {
   Serial.println("API::setup");
-  this->connectToWifi();
+  wifi.setup();
 }
 
 void API::loop() {
-  if (this->wifiConnected() == false) {
-    this->connectToWifi();
-  }
+  wifi.loop();
 }
 
 void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
@@ -75,34 +74,11 @@ void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
   // Retry
   if (httpCode != HTTP_CODE_OK) {
     // Double check if WiFi is working
-    if (!this->wifiConnected()) {
-      this->connectToWifi();
+    if (!wifi.connected()) {
+      wifi.connect();
     }
     this->sync(clock, sunsetSunrise);
   }
-}
-
-// Connect to WiFi
-void API::connectToWifi() {
-  WiFi.begin(ClockConfig.ssid, ClockConfig.pwd);
-  while (WiFi.status() != WL_CONNECTED) {
-    // TODO: Print some status to the display?
-    Serial.print(".");
-    delay(500);
-  }
-  Serial.println("");
-  Serial.println("WiFi Connected");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP()); 
-}
-
-// Verify that WiFi is connected
-bool API::wifiConnected() {
-  if (WiFi.status() != WL_CONNECTED) {
-    WiFi.disconnect();
-    return false;
-  }
-  return true;
 }
 
 Time API::parseTime(const char *string) {
@@ -116,4 +92,3 @@ Time API::parseTime(const char *string) {
   };
   return time;
 }
-
