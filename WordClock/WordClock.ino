@@ -21,7 +21,7 @@ void setup() {
 }
 
 void loop() {
-  api.loop();
+  api.loop(&clock, &sunsetSunrise);
   clock.loop(&display);
   sunsetSunrise.loop(&display, &clock);
 }

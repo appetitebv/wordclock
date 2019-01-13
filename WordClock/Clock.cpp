@@ -2,8 +2,10 @@
 
 DS3231 RTC;
 
+// Bool if we're in a century year, don't need to be changed until year 2100.
+bool Century=false; 
 Time LastDisplayed = {
-  0,0,0
+  0,0,0,0,0,0
 };
 
 Clock::Clock() {
@@ -31,9 +33,24 @@ void Clock::loop(Display *display) {
 }
 
 void Clock::setTime(Time time) {
+  RTC.setYear(time.year);
+  RTC.setMonth(time.month);
+  RTC.setDate(time.day);
   RTC.setHour(time.hour);
   RTC.setMinute(time.minute);
   RTC.setSecond(time.second);
+}
+
+uint8_t Clock::getYear() {
+  return RTC.getYear();
+}
+
+uint8_t Clock::getMonth() {
+  return RTC.getMonth(Century);
+}
+
+uint8_t Clock::getDate() {
+  return RTC.getDate();
 }
 
 uint8_t Clock::getHour() {
@@ -48,8 +65,12 @@ uint8_t Clock::getMinute() {
 
 Time Clock::getTime() {
   Time CurrentTime {
+    this->getYear(),
+    this->getMonth(),
+    this->getDate(),
     this->getHour(),
-    this->getMinute()
+    this->getMinute(),
+    this->getSecond()
   };
   return CurrentTime;
 }

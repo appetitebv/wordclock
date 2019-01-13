@@ -2,6 +2,10 @@
 
 HTTPClient http;
 
+Time LastSync = {
+  0,0,0,0,0,0
+};
+
 API::API() {
 }
 
@@ -10,9 +14,15 @@ void API::setup() {
   this->connectToWifi();
 }
 
-void API::loop() {
+void API::loop(Clock *clock, SunsetSunrise *sunsetSunrise) {
   if (this->wifiConnected() == false) {
     this->connectToWifi();
+  }
+  
+  // Sync at 01:00 AM
+  Time time = clock->getTime();
+  if (LastSync.day != time.day && time.hour == 1 && time.minute == 0) {
+    this->sync(clock, sunsetSunrise);
   }
 }
 
@@ -44,13 +54,14 @@ void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
     Serial.println(response);
 
     // Allocate decoding buffer
-    const size_t decodeSize = JSON_OBJECT_SIZE(4) + 220;
+    const size_t decodeSize = JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + 220;
     DynamicJsonBuffer decodeBuffer(decodeSize);
 
     // Parse the response payload
     JsonObject& payload = decodeBuffer.parseObject(response);
 
     if (payload.success()) {
+      
       // Parse current time
       auto currentTimeString = payload["currentTime"].as<char*>();
       Time currentTime = this->parseTime(currentTimeString);
@@ -65,6 +76,17 @@ void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
       Time sunset = this->parseTime(sunsetString);
 
       sunsetSunrise->set(sunrise, sunset);
+      
+      // Save last sync
+      LastSync = currentTime;
+
+      if (payload.containsKey("newFirmware")) {
+        const char* host = payload["newFirmware"]["host"];
+        const char* path = payload["newFirmware"]["path"];
+        this->updateFirmware(host, path);
+      } else {
+        Serial.println("No new firmware available");
+      }
       
     } else {
       Serial.println("Decoding json failed");
@@ -96,6 +118,15 @@ void API::connectToWifi() {
   Serial.println(WiFi.localIP()); 
 }
 
+void API::updateFirmware(const char* host, const char* path) {
+  Serial.print("Updating firmware from host: ");
+  Serial.print(host);
+  Serial.print(" with path: ");
+  Serial.println(path);
+  ESPhttpUpdate.update(host, 80, path);
+  Serial.println("Done updating.");
+}
+
 // Verify that WiFi is connected
 bool API::wifiConnected() {
   if (WiFi.status() != WL_CONNECTED) {
@@ -106,10 +137,16 @@ bool API::wifiConnected() {
 }
 
 Time API::parseTime(const char *string) {
+  uint8_t year = ((string[0]-'0')*1000)+((string[1]-'0')*100)+((string[2]-'0')*10)+(string[3]-'0');
+  uint8_t month = ((string[5]-'0')*10)+(string[6]-'0');
+  uint8_t day = ((string[8]-'0')*10)+(string[9]-'0');
   uint8_t hour = ((string[11]-'0')*10)+(string[12]-'0');
   uint8_t minute = ((string[14]-'0')*10)+(string[15]-'0');
   uint8_t second = ((string[17]-'0')*10)+(string[18]-'0');
   Time time {
+    year,
+    month,
+    day,
     hour,
     minute,
     second
