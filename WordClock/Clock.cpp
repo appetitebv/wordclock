@@ -24,6 +24,10 @@ void Clock::loop(Display *display) {
   Time CurrentTime = this->getTime();
   
   if (CurrentTime.hour != LastDisplayed.hour || CurrentTime.minute != LastDisplayed.minute) {
+    Serial.print("Display time:");
+    Serial.print(CurrentTime.hour);
+    Serial.print(":");
+    Serial.println(CurrentTime.minute);
     display->displayTime(CurrentTime.hour, CurrentTime.minute);
   }
 
