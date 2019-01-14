@@ -46,8 +46,8 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
  */
 void Display::displayWordAt(uint8_t index) {
 
-  //size is always 5, hardcodede for now
-  for (uint8_t i=0; i < 5; i++) {
+  //size is always 6, hardcodede for now
+  for (uint8_t i=0; i < 6; i++) {
     uint8_t pixel = pgm_read_byte(&Display::wordMapping[index][i]);
     if (pixel != 99) {
       pixels.setPixelColor(pixel, ClockConfig.clockColor);

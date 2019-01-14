@@ -20,6 +20,12 @@ void Config::setup() {
   Serial.println("Config::Config");
   EEPROM.begin(512);
   this->read();
+
+  // After auto-update, update firmwareVersion
+  if (ClockConfig.firmwareVersion != CONFIG_FIRM_VERSION) {
+    ClockConfig.firmwareVersion = CONFIG_FIRM_VERSION;
+    this->save();
+  }
 }
 
 void Config::read() {
@@ -34,7 +40,9 @@ void Config::read() {
       *((char*)&ClockConfig + t) = EEPROM.read(CONFIG_START + t);
     }
   } else {
-    Serial.println("Config not in EEPROM");
+    Serial.println("Config not in EEPROM.");
+    // we should save the config as soon as we're able to update it.
+    // this->save();
   }
 }
 
