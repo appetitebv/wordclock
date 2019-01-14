@@ -32,9 +32,9 @@ class Config {
   public:
     Config();
     void setup();
+    static void save();
   private:
-    void read();
-    void save();
+    static void read();
 };
 
 #endif

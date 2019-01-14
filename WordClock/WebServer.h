@@ -2,8 +2,12 @@
 #define WebServer_h
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+
+#include "Config.h"
+extern struct ConfigStorageStruct ClockConfig;
 
 #define SERVER_DOMAIN "wordclock"
 
@@ -13,7 +17,8 @@ class WebServer {
     void setup();
     void loop();
   private:
-    static void handleRoot();
+    static void handleConfigSet();
+    static void handleConfigGet();
     static void handleNotFound();
 };
 #endif

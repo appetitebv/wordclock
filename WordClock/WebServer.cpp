@@ -10,7 +10,7 @@ void WebServer::setup() {
   if (!MDNS.begin(SERVER_DOMAIN)) {
     Serial.println("Error setting up MDNS responder!");
   }
-  server.on("/", this->handleRoot);
+  server.on("/config/set", HTTP_POST, this->handleConfigSet);
   server.onNotFound(this->handleNotFound);
   server.begin();
 }
@@ -20,9 +20,38 @@ void WebServer::loop() {
   MDNS.update();
 }
 
-void WebServer::handleRoot() {
-  Serial.println("handleRoot");
-  server.send(200, "application/json", "{\"status\": \"ok\"}");
+void WebServer::handleConfigSet() {
+  const size_t capacity = 3*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + 180;
+  DynamicJsonBuffer jsonBuffer(capacity);
+  JsonObject& payload = jsonBuffer.parseObject(server.arg("plain"));
+
+  if (!payload.success()) {
+    server.send(500);
+    return;
+  }
+
+   if (payload.containsKey("ssid")) {
+    strcpy(ClockConfig.ssid, payload["ssid"]);
+   }
+   if (payload.containsKey("pwd")) {
+    strcpy(ClockConfig.pwd, payload["pwd"]);
+   }
+   if (payload.containsKey("clock")) {
+    ClockConfig.clockColor = payload["clock"]["color"];
+    ClockConfig.clockBrightnessNight = payload["clock"]["brightness"]["day"];
+    ClockConfig.clockBrightnessDay = payload["clock"]["brightness"]["night"];
+   }
+   if (payload.containsKey("gps")) {
+    ClockConfig.lat = payload["gps"]["lat"];
+    ClockConfig.lng = payload["gps"]["lng"];
+   }
+   Config::save();
+   server.send(200);
+}
+
+void WebServer::handleConfigGet() {
+  // TODO
+  WebServer::handleNotFound();
 }
 
 void WebServer::handleNotFound() {
