@@ -29,7 +29,7 @@ void Config::setup() {
 }
 
 void Config::read() {
-  Serial.println("config::read");
+  Serial.println("Config::read");
   // Verify correct version is in EEPROM
   if (EEPROM.read(CONFIG_START) == CONFIG_VERSION[0] &&
       EEPROM.read(CONFIG_START + 1) == CONFIG_VERSION[1] &&
@@ -47,8 +47,10 @@ void Config::read() {
 }
 
 void Config::save() {
+  Serial.println("Save config");
   for (unsigned int t=0; t<sizeof(ClockConfig); t++) {
     EEPROM.write(CONFIG_START + t, *((char*)&ClockConfig + t));
   }
+  EEPROM.commit();
 }
 

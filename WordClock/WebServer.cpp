@@ -5,12 +5,18 @@ ESP8266WebServer server(80);
 WebServer::WebServer() {
 }
 
-void WebServer::setup() {
+Wifi* WebServer::_wifi;
+API* WebServer::_api;
+
+void WebServer::setup(Wifi *wifi, API *api) {
   Serial.println("Server::setup");
+  _wifi = wifi;
+  _api = api;
   if (!MDNS.begin(SERVER_DOMAIN)) {
     Serial.println("Error setting up MDNS responder!");
   }
-  server.on("/config/set", HTTP_POST, this->handleConfigSet);
+  server.on("/config/set", HTTP_POST, handleConfigSet);
+  server.on("/config/get", HTTP_GET, handleConfigGet);
   server.onNotFound(this->handleNotFound);
   server.begin();
 }
@@ -30,16 +36,23 @@ void WebServer::handleConfigSet() {
     return;
   }
 
-   if (payload.containsKey("ssid")) {
-    strcpy(ClockConfig.ssid, payload["ssid"]);
-   }
-   if (payload.containsKey("pwd")) {
-    strcpy(ClockConfig.pwd, payload["pwd"]);
+  bool reconnect=false;
+
+   if (payload.containsKey("wifi")) {
+    const char *ssid = payload["wifi"]["ssid"];
+    const char *pwd = payload["wifi"]["pwd"];
+    Serial.print("SSID:");
+    Serial.println(ssid);
+    Serial.print("PWD:");
+    Serial.println(pwd);
+    strcpy(ClockConfig.ssid, ssid);
+    strcpy(ClockConfig.pwd, pwd);
+    reconnect=true;
    }
    if (payload.containsKey("clock")) {
     ClockConfig.clockColor = payload["clock"]["color"];
-    ClockConfig.clockBrightnessNight = payload["clock"]["brightness"]["day"];
-    ClockConfig.clockBrightnessDay = payload["clock"]["brightness"]["night"];
+    ClockConfig.clockBrightnessDay = payload["clock"]["brightness"]["day"];
+    ClockConfig.clockBrightnessNight = payload["clock"]["brightness"]["night"];
    }
    if (payload.containsKey("gps")) {
     ClockConfig.lat = payload["gps"]["lat"];
@@ -47,11 +60,37 @@ void WebServer::handleConfigSet() {
    }
    Config::save();
    server.send(200);
+
+   if (reconnect) {
+    _wifi->connectToWifi();
+    _api->sync();
+   }
 }
 
 void WebServer::handleConfigGet() {
-  // TODO
-  WebServer::handleNotFound();
+  Serial.println("Sending JSON");
+  const size_t capacity = 3*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + 180;
+  DynamicJsonBuffer jsonBuffer(capacity);
+  
+  JsonObject& payload = jsonBuffer.createObject();
+  
+  JsonObject& wifi = payload.createNestedObject("wifi");
+  wifi["ssid"] = ClockConfig.ssid;
+  wifi["pwd"] = ClockConfig.pwd;
+  
+  JsonObject& clock = payload.createNestedObject("clock");
+  clock["color"] = ClockConfig.clockColor;
+  
+  JsonObject& brightness = clock.createNestedObject("brightness");
+  brightness["day"] = ClockConfig.clockBrightnessDay;
+  brightness["night"] = ClockConfig.clockBrightnessNight;
+  
+  String json;
+  payload.prettyPrintTo(json);
+
+  Serial.println(json);
+  
+  server.send(200, "application/json", json);
 }
 
 void WebServer::handleNotFound() {

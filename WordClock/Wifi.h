@@ -14,9 +14,9 @@ class Wifi {
     Wifi();
     void setup();
     void loop();
+    bool wifiConnected();
+    void connectToWifi();
   private:
     void startAP();
-    void connectToWifi();
-    bool wifiConnected();
 };
 #endif

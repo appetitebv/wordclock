@@ -17,18 +17,20 @@ void setup() {
   Serial.begin(115200);
   config.setup();
   wifi.setup();
-  webServer.setup();
+  webServer.setup(&wifi, &api);
   display.setup();
   clock.setup();
-  api.setup();
   sunsetSunrise.setup();
-
-  api.sync(&clock, &sunsetSunrise);
+  api.setup(&clock, &sunsetSunrise);
+  if (wifi.wifiConnected()) {
+    api.sync();
+  }
 }
 
 void loop() {
-  api.loop(&clock, &sunsetSunrise);
+  wifi.loop();
+  webServer.loop();
+  api.loop();
   clock.loop(&display);
   sunsetSunrise.loop(&display, &clock);
-  webServer.loop();
 }

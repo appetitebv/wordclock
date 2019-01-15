@@ -9,19 +9,22 @@ Time LastSync = {
 API::API() {
 }
 
-void API::setup() {
+Clock* API::_clock;
+SunsetSunrise* API::_sunsetSunrise;
+
+void API::setup(Clock *clock, SunsetSunrise *sunsetSunrise) {
   Serial.println("API::setup");
 }
 
-void API::loop(Clock *clock, SunsetSunrise *sunsetSunrise) {
+void API::loop() {
   // Sync at 01:00 AM
-  Time time = clock->getTime();
+  Time time = _clock->getTime();
   if (LastSync.day != time.day && time.hour == 1 && time.minute == 0) {
-    this->sync(clock, sunsetSunrise);
+    this->sync();
   }
 }
 
-void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
+void API::sync() {
   // Allocate json buffer
   const int encodeCapacity = JSON_OBJECT_SIZE(3);
   StaticJsonBuffer<encodeCapacity> encodeBuffer;
@@ -60,7 +63,7 @@ void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
       // Parse current time
       auto currentTimeString = payload["currentTime"].as<char*>();
       Time currentTime = this->parseTime(currentTimeString);
-      clock->setTime(currentTime);
+      _clock->setTime(currentTime);
 
       // Parse sunrise
       auto sunriseString = payload["sunrise"].as<char*>();
@@ -70,7 +73,7 @@ void API::sync(Clock *clock, SunsetSunrise *sunsetSunrise) {
       auto sunsetString = payload["sunset"].as<char*>();
       Time sunset = this->parseTime(sunsetString);
 
-      sunsetSunrise->set(sunrise, sunset);
+      _sunsetSunrise->set(sunrise, sunset);
       
       // Save last sync
       LastSync = currentTime;
