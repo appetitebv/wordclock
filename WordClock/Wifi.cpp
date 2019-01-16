@@ -14,21 +14,21 @@ void Wifi::setup() {
 
 void Wifi::loop() {
   if (this->wifiConnected() == false) {
-    this->wifiConnected();
+    this->connectToWifi();
   }
 }
 
 void Wifi::startAP() {
   Serial.println("Start AP");
-  WiFi.softAP(WIFI_SSID, NULL, 6);
+  WiFi.softAP(WIFI_SSID, NULL, 11);
 }
 
 // Connect to WiFi
 void Wifi::connectToWifi() {
   if (strcmp(ClockConfig.ssid, "") == 0) {
-    this->startAP();
     return;
   }
+  WiFi.disconnect();
   Serial.print("Connect to: ");
   Serial.println(ClockConfig.ssid);
   WiFi.begin(ClockConfig.ssid, ClockConfig.pwd);
@@ -57,7 +57,6 @@ void Wifi::connectToWifi() {
 // Verify that WiFi is connected
 bool Wifi::wifiConnected() {
   if (WiFi.status() != WL_CONNECTED) {
-    WiFi.disconnect();
     return false;
   }
   return true;
