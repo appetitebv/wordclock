@@ -6,7 +6,7 @@ Wifi::Wifi() {
 void Wifi::setup() {
   Serial.println("Wifi::setup");
   if (strcmp(ClockConfig.ssid, "") == 0) {
-    this->startAP();
+    this->startAccessPoint();
   } else {
     this->connectToWifi();
   }
@@ -18,9 +18,11 @@ void Wifi::loop() {
   }
 }
 
-void Wifi::startAP() {
+void Wifi::startAccessPoint() {
   Serial.println("Start AP");
-  WiFi.softAP(WIFI_SSID, NULL, 11);
+  char ssid[24];
+  this->accessPointSSID(ssid);
+  WiFi.softAP(ssid, NULL, 11);
 }
 
 // Connect to WiFi
@@ -50,7 +52,7 @@ void Wifi::connectToWifi() {
     Serial.println(WiFi.localIP()); 
   } else {
     Serial.println("Unable to connect to WiFi.");
-    this->startAP();
+    this->startAccessPoint();
   }
 }
 
@@ -61,3 +63,11 @@ bool Wifi::wifiConnected() {
   }
   return true;
 }
+
+void Wifi::accessPointSSID(char *ssid) {
+  strcpy(ssid, WIFI_SSID);
+  strcat(ssid, "-");
+  auto chipid = ESP.getChipId();
+  strcat(ssid, String(chipid).c_str());
+}
+

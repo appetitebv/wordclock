@@ -21,6 +21,7 @@ class WebServer {
     void setup(Wifi *wifi, API *api);
     void loop();
   private:
+    static void handleRoot();
     static void handleConfigSet();
     static void handleConfigGet();
     static void handleNotFound();

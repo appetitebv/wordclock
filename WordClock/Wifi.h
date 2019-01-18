@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <DNSServer.h>
 
 #include "Config.h"
 extern struct ConfigStorageStruct ClockConfig;
@@ -17,6 +18,7 @@ class Wifi {
     bool wifiConnected();
     void connectToWifi();
   private:
-    void startAP();
+    void startAccessPoint();
+    void accessPointSSID(char *ssid);
 };
 #endif
