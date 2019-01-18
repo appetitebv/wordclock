@@ -73,6 +73,7 @@ void WebServer::handleConfigGet() {
   DynamicJsonBuffer jsonBuffer(capacity);
   
   JsonObject& payload = jsonBuffer.createObject();
+  payload["version"] = ClockConfig.firmwareVersion;
   
   JsonObject& wifi = payload.createNestedObject("wifi");
   wifi["ssid"] = ClockConfig.ssid;
