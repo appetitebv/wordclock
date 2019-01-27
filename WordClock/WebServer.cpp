@@ -89,6 +89,10 @@ void WebServer::handleConfigGet() {
   JsonObject& brightness = clock.createNestedObject("brightness");
   brightness["day"] = ClockConfig.clockBrightnessDay;
   brightness["night"] = ClockConfig.clockBrightnessNight;
+
+  JsonObject& gps = payload.createNestedObject("gps");
+  gps["lat"] = ClockConfig.lat;
+  gps["lng"] = ClockConfig.lng;
   
   String json;
   payload.prettyPrintTo(json);
