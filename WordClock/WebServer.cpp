@@ -67,9 +67,13 @@ void WebServer::handleConfigSet() {
     bool mqttEnabled = payload["mqtt"]["enabled"];
     ClockConfig.mqttEnabled = mqttEnabled;
     if (mqttEnabled) {
-      ClockConfig.mqttHost = payload["mqtt"]["host"]
-      ClockConfig.mqttUsername = payload["mqtt"]["username"]
-      ClockConfig.mqttPasswd = payload["mqtt"]["passwd"]
+      const char *mqttHost = payload["mqtt"]["host"];
+      const char *mqttUsername = payload["mqtt"]["username"];
+      const char *mqttPasswd = payload["mqtt"]["passwd"];
+
+      strcpy(ClockConfig.mqttHost, mqttHost);
+      strcpy(ClockConfig.mqttUsername, mqttUsername);
+      strcpy(ClockConfig.mqttPasswd, mqttPasswd);
     } else {
       ClockConfig.mqttHost = "";
       ClockConfig.mqttUsername = ""; 
@@ -88,7 +92,7 @@ void WebServer::handleConfigSet() {
 
 void WebServer::handleConfigGet() {
   Serial.println("Sending JSON");
-  const size_t capacity = 3*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + 180;
+  const size_t capacity = 4*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + 162;
   DynamicJsonBuffer jsonBuffer(capacity);
   
   JsonObject& payload = jsonBuffer.createObject();
