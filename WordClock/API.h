@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ESP8266HTTPClient.h>
-#include "Wifi.h"
+#include <ESP8266httpUpdate.h>
 
 #include "Clock.h"
 #include "SunsetSunrise.h"
@@ -12,12 +12,15 @@
 extern struct ConfigStorageStruct ClockConfig;
 
 class API {
+  static Clock* _clock;
+  static SunsetSunrise* _sunsetSunrise;
   public:
     API();
-    void setup();
+    void setup(Clock *clock, SunsetSunrise *sunsetSunrise);
     void loop();
-    void sync(Clock *clock, SunsetSunrise *sunsetSunrise);
+    void sync();
   private:
+    void updateFirmware(const char* host, const char* path);
     Time parseTime(const char *string);
 };
 #endif
