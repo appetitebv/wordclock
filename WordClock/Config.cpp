@@ -10,7 +10,11 @@ ConfigStorageStruct ClockConfig = {
   CONFIG_BRIGHTNESS_NIGHT,
   CONFIG_BRIGHTNESS_DAY,
   CONFIG_LAT,
-  CONFIG_LNG
+  CONFIG_LNG,
+  CONFIG_MQTT_ENABLED,
+  CONFIG_MQTT_HOST,
+  CONFIG_MQTT_USERNAME,
+  CONFIG_MQTT_PASSWD
 };
 
 Config::Config() {
@@ -53,4 +57,3 @@ void Config::save() {
   }
   EEPROM.commit();
 }
-

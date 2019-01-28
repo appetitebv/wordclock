@@ -47,22 +47,36 @@ void WebServer::handleConfigSet() {
 
   bool reconnect=false;
 
-   if (payload.containsKey("wifi")) {
+  if (payload.containsKey("wifi")) {
     const char *ssid = payload["wifi"]["ssid"];
     const char *pwd = payload["wifi"]["pwd"];
     strcpy(ClockConfig.ssid, ssid);
     strcpy(ClockConfig.pwd, pwd);
     reconnect=true;
-   }
-   if (payload.containsKey("clock")) {
+  }
+  if (payload.containsKey("clock")) {
     ClockConfig.clockColor = payload["clock"]["color"];
     ClockConfig.clockBrightnessDay = payload["clock"]["brightness"]["day"];
     ClockConfig.clockBrightnessNight = payload["clock"]["brightness"]["night"];
-   }
-   if (payload.containsKey("gps")) {
+  }
+  if (payload.containsKey("gps")) {
     ClockConfig.lat = payload["gps"]["lat"];
     ClockConfig.lng = payload["gps"]["lng"];
-   }
+  }
+  if (payload.containsKey("mqtt")) {
+    bool mqttEnabled = payload["mqtt"]["enabled"];
+    ClockConfig.mqttEnabled = mqttEnabled;
+    if (mqttEnabled) {
+      ClockConfig.mqttHost = payload["mqtt"]["host"]
+      ClockConfig.mqttUsername = payload["mqtt"]["username"]
+      ClockConfig.mqttPasswd = payload["mqtt"]["passwd"]
+    } else {
+      ClockConfig.mqttHost = "";
+      ClockConfig.mqttUsername = ""; 
+      ClockConfig.mqttPasswd = "";
+    }
+  }
+   
    Config::save();
    server.send(200);
 
@@ -93,6 +107,10 @@ void WebServer::handleConfigGet() {
   JsonObject& gps = payload.createNestedObject("gps");
   gps["lat"] = ClockConfig.lat;
   gps["lng"] = ClockConfig.lng;
+
+  JsonObject& mqtt = payload.createNestedObject("mqtt");
+  mqtt["host"] = ClockConfig.mqttHost;
+  mqtt["username"] = ClockConfig.mqttUsername;
   
   String json;
   payload.prettyPrintTo(json);

@@ -12,6 +12,7 @@ API api;
 SunsetSunrise sunsetSunrise;
 Wifi wifi;
 WebServer webServer;
+Mqtt mqtt;
   
 void setup() {
   Serial.begin(115200);
@@ -25,6 +26,10 @@ void setup() {
   if (wifi.wifiConnected()) {
     api.sync();
   }
+
+  // TODO: only if enabled in settings
+  mqtt.setup()
+
 }
 
 void loop() {
@@ -33,4 +38,5 @@ void loop() {
   api.loop();
   clock.loop(&display);
   sunsetSunrise.loop(&display, &clock);
+  mqtt.loop()
 }

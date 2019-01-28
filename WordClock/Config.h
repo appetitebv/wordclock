@@ -13,6 +13,10 @@
 #define CONFIG_BRIGHTNESS_DAY 170   // 0-256
 #define CONFIG_LAT 52.009620
 #define CONFIG_LNG 4.693660
+#define CONFIG_MQTT_ENABLED false
+#define CONFIG_MQTT_HOST ""
+#define CONFIG_MQTT_USERNAME ""
+#define CONFIG_MQTT_PASSWD ""
  
 #define CONFIG_START 32
 
@@ -26,6 +30,10 @@ struct ConfigStorageStruct {
   uint8_t clockBrightnessDay;
   double lat;
   double lng;
+  bool mqttEnabled;
+  char mqttHost[24];
+  char mqttUsername[20];
+  char mqttPasswd[20];
 };
 
 class Config {
