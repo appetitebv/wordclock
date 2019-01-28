@@ -15,6 +15,7 @@
 #define CONFIG_LNG 4.693660
 #define CONFIG_MQTT_ENABLED false
 #define CONFIG_MQTT_HOST ""
+#define CONFIG_MQTT_PORT 1883 // 0 - 65535
 #define CONFIG_MQTT_USERNAME ""
 #define CONFIG_MQTT_PASSWD ""
  
@@ -32,6 +33,7 @@ struct ConfigStorageStruct {
   double lng;
   bool mqttEnabled;
   char mqttHost[24];
+  uint16_t mqttPort;
   char mqttUsername[20];
   char mqttPasswd[20];
 };

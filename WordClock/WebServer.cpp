@@ -74,10 +74,11 @@ void WebServer::handleConfigSet() {
       strcpy(ClockConfig.mqttHost, mqttHost);
       strcpy(ClockConfig.mqttUsername, mqttUsername);
       strcpy(ClockConfig.mqttPasswd, mqttPasswd);
+      ClockConfig.mqttPort = payload["mqtt"]["port"];
     } else {
-      ClockConfig.mqttHost = "";
-      ClockConfig.mqttUsername = ""; 
-      ClockConfig.mqttPasswd = "";
+      strcpy(ClockConfig.mqttHost, "");
+      strcpy(ClockConfig.mqttUsername, ""); 
+      strcpy(ClockConfig.mqttPasswd, "");
     }
   }
    
