@@ -74,7 +74,7 @@ void WebServer::handleConfigSet() {
 
 void WebServer::handleConfigGet() {
   Serial.println("Sending JSON");
-  const size_t capacity = 4*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + 162;
+  const size_t capacity = JSON_OBJECT_SIZE(1) + 3*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + 154;
   DynamicJsonBuffer jsonBuffer(capacity);
   
   JsonObject& payload = jsonBuffer.createObject();
