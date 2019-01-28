@@ -47,22 +47,22 @@ void WebServer::handleConfigSet() {
 
   bool reconnect=false;
 
-   if (payload.containsKey("wifi")) {
+  if (payload.containsKey("wifi")) {
     const char *ssid = payload["wifi"]["ssid"];
     const char *pwd = payload["wifi"]["pwd"];
     strcpy(ClockConfig.ssid, ssid);
     strcpy(ClockConfig.pwd, pwd);
     reconnect=true;
-   }
-   if (payload.containsKey("clock")) {
+  }
+  if (payload.containsKey("clock")) {
     ClockConfig.clockColor = payload["clock"]["color"];
     ClockConfig.clockBrightnessDay = payload["clock"]["brightness"]["day"];
     ClockConfig.clockBrightnessNight = payload["clock"]["brightness"]["night"];
-   }
-   if (payload.containsKey("gps")) {
+  }
+  if (payload.containsKey("gps")) {
     ClockConfig.lat = payload["gps"]["lat"];
     ClockConfig.lng = payload["gps"]["lng"];
-   }
+  }
    Config::save();
    server.send(200);
 
@@ -74,7 +74,7 @@ void WebServer::handleConfigSet() {
 
 void WebServer::handleConfigGet() {
   Serial.println("Sending JSON");
-  const size_t capacity = 3*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + 180;
+  const size_t capacity = 4*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + 162;
   DynamicJsonBuffer jsonBuffer(capacity);
   
   JsonObject& payload = jsonBuffer.createObject();
@@ -93,7 +93,7 @@ void WebServer::handleConfigGet() {
   JsonObject& gps = payload.createNestedObject("gps");
   gps["lat"] = ClockConfig.lat;
   gps["lng"] = ClockConfig.lng;
-  
+
   String json;
   payload.prettyPrintTo(json);
 
