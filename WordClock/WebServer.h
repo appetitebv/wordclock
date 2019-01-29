@@ -9,6 +9,7 @@
 #include "API.h"
 #include "Wifi.h"
 #include "Config.h"
+#include "SunsetSunrise.h"
 extern struct ConfigStorageStruct ClockConfig;
 
 #define SERVER_DOMAIN "wordclock"
@@ -16,14 +17,16 @@ extern struct ConfigStorageStruct ClockConfig;
 class WebServer {
     static Wifi* _wifi;
     static API* _api;
+    static SunsetSunrise * _sunsetSunrise;
   public:
     WebServer();
-    void setup(Wifi *wifi, API *api);
+    void setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise);
     void loop();
   private:
     static void handleRoot();
     static void handleConfigSet();
     static void handleConfigGet();
     static void handleNotFound();
+    static void printTime(Time time, String &output);
 };
 #endif

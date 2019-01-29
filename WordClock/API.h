@@ -19,6 +19,7 @@ class API {
     void setup(Clock *clock, SunsetSunrise *sunsetSunrise);
     void loop();
     void sync();
+    Time lastSync();
   private:
     void updateFirmware(const char* host, const char* path);
     Time parseTime(const char *string);

@@ -93,6 +93,10 @@ void API::sync() {
   http.end();
 }
 
+Time API::lastSync() {
+  return LastSync;
+}
+
 void API::updateFirmware(const char* host, const char* path) {
     Serial.print("Updating firmware from host: ");
     Serial.print(host);
