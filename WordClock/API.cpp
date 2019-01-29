@@ -93,6 +93,10 @@ void API::sync() {
   http.end();
 }
 
+Time API::lastSync() {
+  return LastSync;
+}
+
 void API::updateFirmware(const char* host, const char* path) {
     Serial.print("Updating firmware from host: ");
     Serial.print(host);
@@ -103,7 +107,7 @@ void API::updateFirmware(const char* host, const char* path) {
 }
 
 Time API::parseTime(const char *string) {
-  uint8_t year = ((string[0]-'0')*1000)+((string[1]-'0')*100)+((string[2]-'0')*10)+(string[3]-'0');
+  uint16_t year = ((string[0]-'0')*1000)+((string[1]-'0')*100)+((string[2]-'0')*10)+(string[3]-'0');
   uint8_t month = ((string[5]-'0')*10)+(string[6]-'0');
   uint8_t day = ((string[8]-'0')*10)+(string[9]-'0');
   uint8_t hour = ((string[11]-'0')*10)+(string[12]-'0');

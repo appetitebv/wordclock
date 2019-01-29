@@ -45,7 +45,7 @@ void Clock::setTime(Time time) {
   RTC.setSecond(time.second);
 }
 
-uint8_t Clock::getYear() {
+uint16_t Clock::getYear() {
   return RTC.getYear();
 }
 
@@ -68,13 +68,14 @@ uint8_t Clock::getMinute() {
 }
 
 Time Clock::getTime() {
+  DateTime dateTime = RTClib::now();
   Time CurrentTime {
-    this->getYear(),
-    this->getMonth(),
-    this->getDate(),
-    this->getHour(),
-    this->getMinute(),
-    this->getSecond()
+    dateTime.year(),
+    dateTime.month(),
+    dateTime.day(),
+    dateTime.hour(),
+    dateTime.minute(),
+    dateTime.second()
   };
   return CurrentTime;
 }
