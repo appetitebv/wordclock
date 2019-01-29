@@ -45,7 +45,7 @@ void Clock::setTime(Time time) {
   RTC.setSecond(time.second);
 }
 
-uint8_t Clock::getYear() {
+uint16_t Clock::getYear() {
   return RTC.getYear();
 }
 
