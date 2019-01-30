@@ -116,6 +116,7 @@ void WebServer::handleConfigGet() {
   gps["lng"] = ClockConfig.lng;
 
   JsonObject& mqtt = payload.createNestedObject("mqtt");
+  mqtt["enabled"] = ClockConfig.mqttEnabled;
   mqtt["host"] = ClockConfig.mqttHost;
   mqtt["username"] = ClockConfig.mqttUsername;
 
@@ -186,4 +187,3 @@ void WebServer::printTime(Time time, String &output) {
   }
   output+=time.second;
 }
-

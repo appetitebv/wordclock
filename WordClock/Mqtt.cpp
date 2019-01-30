@@ -46,7 +46,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 
 void reconnect() {
   // Loop until we're reconnected
-  while (!client.connected()) {
+//  while (!client.connected()) {
     Serial.println("INFO: Attempting MQTT connection...");
     // Attempt to connect
     if (client.connect("wordclock", ClockConfig.mqttUsername, ClockConfig.mqttPasswd)) {
@@ -60,7 +60,7 @@ void reconnect() {
       Serial.print(client.state());
       Serial.println("DEBUG: try again in 5 seconds");
     }
-  }
+//  }
 }
 
 
