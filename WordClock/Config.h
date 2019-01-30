@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <Arduino.h>
 
+#include <EEPROM.h>
+
 #define CONFIG_VERSION "001"
 #define CONFIG_SSID ""
 #define CONFIG_PWD ""

@@ -5,6 +5,7 @@
 #include "Wifi.h"
 #include "WebServer.h"
 #include "Mqtt.h"
+#include "Config.h"
 
 Config config;
 Display display;
@@ -27,10 +28,9 @@ void setup() {
   if (wifi.wifiConnected()) {
     api.sync();
   }
-
-  // TODO: only if enabled in settings
-  mqtt.setup();
-
+  if (ClockConfig.mqttEnabled) {
+    mqtt.setup();
+  }
 }
 
 void loop() {
@@ -39,5 +39,7 @@ void loop() {
   api.loop();
   clock.loop(&display);
   sunsetSunrise.loop(&display, &clock);
-  mqtt.loop();
+  if (ClockConfig.mqttEnabled) {
+    mqtt.loop();
+  }
 }
