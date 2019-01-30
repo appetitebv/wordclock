@@ -46,6 +46,14 @@ void SunsetSunrise::set(Time sunrise, Time sunset) {
   Sunset = sunset;
 }
 
+Time SunsetSunrise::sunrise() {
+  return Sunrise;
+}
+
+Time SunsetSunrise::sunset() {
+  return Sunset;
+}
+
 void SunsetSunrise::setDay(Display *display) {
   display->setBrightness(ClockConfig.clockBrightnessDay);
 }

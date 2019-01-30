@@ -14,6 +14,8 @@ class SunsetSunrise {
     void setup();
     void set(Time sunrise, Time sunset);
     void loop(Display *display, Clock *clock);
+    Time sunrise();
+    Time sunset();
   private:
     void setDay(Display *display);
     void setNight(Display *display);

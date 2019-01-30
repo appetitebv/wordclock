@@ -7,13 +7,15 @@ WebServer::WebServer() {
 
 Wifi* WebServer::_wifi;
 API* WebServer::_api;
+SunsetSunrise* WebServer::_sunsetSunrise;
 
 const char* PROGMEM rootHTML = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1,maximum-scale=1\"><title>Word Clock</title><link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css\"></head><body><div class=\"container\"><h1>Word Clock</h1><div class=\"form-group\"><label for=\"ssid\">Network</label><input type=\"text\" class=\"form-control\" id=\"ssid\" placeholder=\"SSID\"></div><div class=\"form-group\"><label for=\"password\">Password</label><input type=\"password\" class=\"form-control\" id=\"password\" placeholder=\"Password\"></div><button type=\"submit\" class=\"btn btn-primary\" id=\"save\">Save</button></div><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script><script language=\"javascript\" type=\"text/javascript\">$(\"#save\").click(function(){$.ajax({url:\"/config/set\",type:\"POST\",contentType:\"application/json\",data:JSON.stringify({wifi:{ssid:$(\"#ssid\").val(),pwd:$(\"#password\").val()}}),dataType:\"json\"});});</script></body></html>";
 
-void WebServer::setup(Wifi *wifi, API *api) {
+void WebServer::setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise) {
   Serial.println("Server::setup");
   _wifi = wifi;
   _api = api;
+  _sunsetSunrise = sunsetSunrise;
   if (!MDNS.begin(SERVER_DOMAIN)) {
     Serial.println("Error setting up MDNS responder!");
   }
@@ -93,7 +95,7 @@ void WebServer::handleConfigSet() {
 
 void WebServer::handleConfigGet() {
   Serial.println("Sending JSON");
-  const size_t capacity = 4*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + 162;
+  const size_t capacity = 4*JSON_OBJECT_SIZE(2) + 2*JSON_OBJECT_SIZE(3) + 162;
   DynamicJsonBuffer jsonBuffer(capacity);
   
   JsonObject& payload = jsonBuffer.createObject();
@@ -116,7 +118,20 @@ void WebServer::handleConfigGet() {
   JsonObject& mqtt = payload.createNestedObject("mqtt");
   mqtt["host"] = ClockConfig.mqttHost;
   mqtt["username"] = ClockConfig.mqttUsername;
+
+  JsonObject& sunriseSunset = payload.createNestedObject("sunriseSunset");
+  String sunrise;
+  WebServer::printTime(_sunsetSunrise->sunrise(), sunrise);
+  sunriseSunset["sunrise"] = sunrise;
   
+  String sunset;
+  WebServer::printTime(_sunsetSunrise->sunset(), sunset);
+  sunriseSunset["sunset"] = sunset;
+
+  String lastSync;
+  WebServer::printTime(_api->lastSync(), lastSync);
+  sunriseSunset["lastSync"] = lastSync;
+
   String json;
   payload.prettyPrintTo(json);
 
@@ -141,3 +156,34 @@ void WebServer::handleNotFound() {
 
   server.send(404, "text/plain", message);
 }
+
+void WebServer::printTime(Time time, String &output) {
+  output=String("");
+  output+=time.year;
+  output+="-";
+  if (time.month<10) {
+    output+="0";
+  }
+  output+=time.month;
+  output+="-";
+  if (time.day < 10) {
+    output+="0";
+  }
+  output+=time.day;
+  output+=" ";
+  if (time.hour < 10) {
+    output+="0";
+  }
+  output+=time.hour;
+  output+=":";
+  if (time.minute < 10) {
+    output+="0";
+  }
+  output+=time.minute;
+  output+=":";
+  if (time.second < 10) {
+    output+="0";
+  }
+  output+=time.second;
+}
+
