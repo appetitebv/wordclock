@@ -4,12 +4,15 @@
 #include <Arduino.h>
 
 #include "Config.h"
+#include "Display.h"
+
 extern struct ConfigStorageStruct ClockConfig;
 
 class Mqtt {
+  static Display* _display;
   public:
     Mqtt();
-    void setup();
+    void setup(Display *display);
     void loop();
   private:
 };

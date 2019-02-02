@@ -29,7 +29,7 @@ void setup() {
     api.sync();
   }
   if (ClockConfig.mqttEnabled) {
-    mqtt.setup();
+    mqtt.setup(&display);
   }
 }
 

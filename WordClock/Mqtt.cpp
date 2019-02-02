@@ -19,31 +19,27 @@ boolean m_light_state = false;
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 
+Display* Mqtt::_display;
+
 Mqtt::Mqtt() {
 }
 
-int convertToInt(char upper,char lower) {
-  int uVal = (int)upper;
-  int lVal = (int)lower;
-  uVal = uVal >64 ? uVal - 55 : uVal - 48;
-  uVal = uVal << 4;
-  lVal = lVal >64 ? lVal - 55 : lVal - 48;
-  return uVal + lVal;
-}
-
-uint32_t convertTo32Bit(uint8_t r, uint8_t g, uint8_t b) {
-  return ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
-}
-
 void setRgbState(String payload) {
-  char c[7]; 
-  payload.toCharArray(c,8);
+  String r2 = payload.substring(0,3);
+  String g2 = payload.substring(3,6);
+  String b2 = payload.substring(6);
 
-  int r = convertToInt(c[1],c[2]);
-  int g = convertToInt(c[3],c[4]);
-  int b = convertToInt(c[5],c[6]);
+  int r = payload.substring(0,3).toInt();
+  int g = payload.substring(3,6).toInt();
+  int b = payload.substring(6).toInt();
 
-  ClockConfig.clockColor = convertTo32Bit(r, g, b);
+  _display.setColor(r, g, b);
+}
+
+void setBrightness(String payload) {
+  Serial.println(payload);
+  int brightness = payload.toInt();
+  _display.setBrightness(brightness);
 }
 
 void publishRgbState() {
@@ -92,6 +88,9 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
   } else if (String(MQTT_LIGHT_RGB_COMMAND_TOPIC).equals(p_topic)) { 
     setRgbState(payload);
     publishRgbState();
+  } else if (String(MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC).equals(p_topic)) { 
+    setBrightness(payload);
+//    publishRgbState();
   }
 
 }
@@ -117,7 +116,9 @@ void reconnect() {
 }
 
 
-void Mqtt::setup() {
+void Mqtt::setup(Display *display) {
+  _display = display;
+  
   client.setServer(ClockConfig.mqttHost, ClockConfig.mqttPort);
   client.setCallback(callback);
 }
