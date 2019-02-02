@@ -40,6 +40,6 @@ void loop() {
   clock.loop(&display);
   sunsetSunrise.loop(&display, &clock);
   if (ClockConfig.mqttEnabled) {
-//    mqtt.loop();
+    mqtt.loop();
   }
 }
