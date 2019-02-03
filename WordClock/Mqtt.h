@@ -9,7 +9,7 @@
 extern struct ConfigStorageStruct ClockConfig;
 
 class Mqtt {
-  static Display* _display;
+  Display* _display;
   public:
     Mqtt();
     void setup(Display *display);

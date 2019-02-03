@@ -142,15 +142,17 @@ void Display::setBrightness(uint8_t brightness) {
   pixels.show();
 }
 
-void setColor(uint8_t r, uint8_t g, uint8_t b) {
-  uint8_t cols = Display::numberMappingCols();
-  uint8_t rows = Display::numberMappingRows();
-  for (uint8_t y=0;y<rows;y++) {
-    for (uint8_t x=0;x<cols;x++) {
-        uint8_t pixel = pgm_read_byte(&Display::displayMapping[y][x]);
-        pixels.setPixelColor(pixel, r, g, b);
+void Display::setColor(uint8_t r, uint8_t g, uint8_t b) {
+  ClockConfig.clockColor = pixels.Color(r, g, b);
+
+  for(int j=0; j<=pixels.numPixels();j++){
+    uint32_t color = pixels.getPixelColor(j);
+    if(color != 0) {
+      pixels.setPixelColor(j, ClockConfig.clockColor);
     }
-  }  
+  }
+
+  pixels.show();
 }
 
 uint8_t Display::numberMappingRows() {
