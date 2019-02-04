@@ -2,10 +2,14 @@
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXELS_COUNT, PIXELS_PIN, NEO_GRB + NEO_KHZ800);
 
+uint32_t currentColor;
+
 Display::Display() {
 }
 
 void Display::setup() {
+  currentColor = ClockConfig.clockColor;
+  
   pixels.begin();
   pixels.setBrightness(ClockConfig.clockBrightnessNight); // Just to be sure as default, this will be updated when sunrise/sunset is available.
   pixels.clear();
@@ -34,7 +38,7 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
       uint8_t value = pgm_read_byte(&Display::numberMapping[number][y][x]);
       if (value == 1) {
         uint8_t pixel = pgm_read_byte(&Display::displayMapping[y][x+shiftX]);
-        pixels.setPixelColor(pixel, ClockConfig.clockColor);
+        pixels.setPixelColor(pixel, currentColor);
       }
     }
   }
@@ -50,7 +54,7 @@ void Display::displayWordAt(uint8_t index) {
   for (uint8_t i=0; i < 6; i++) {
     uint8_t pixel = pgm_read_byte(&Display::wordMapping[index][i]);
     if (pixel != 99) {
-      pixels.setPixelColor(pixel, ClockConfig.clockColor);
+      pixels.setPixelColor(pixel, currentColor);
     }
   }
 }
@@ -143,12 +147,12 @@ void Display::setBrightness(uint8_t brightness) {
 }
 
 void Display::setColor(uint8_t r, uint8_t g, uint8_t b) {
-  ClockConfig.clockColor = pixels.Color(r, g, b);
+  currentColor = pixels.Color(r, g, b);
 
   for(int j=0; j<=pixels.numPixels();j++){
     uint32_t color = pixels.getPixelColor(j);
     if(color != 0) {
-      pixels.setPixelColor(j, ClockConfig.clockColor);
+      pixels.setPixelColor(j, currentColor);
     }
   }
 
