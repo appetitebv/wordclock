@@ -4,15 +4,23 @@
 #include <stdint.h>
 #include <Arduino.h>
 
-#define CONFIG_VERSION "001"
+#include <EEPROM.h>
+
+#define CONFIG_VERSION "002"
+#define PREVIOUS_CONFIG_VERSION "001"
 #define CONFIG_SSID ""
 #define CONFIG_PWD ""
-#define CONFIG_FIRM_VERSION 5
+#define CONFIG_FIRM_VERSION 7
 #define CONFIG_COLOR 8355711        // R127 G127 B127
 #define CONFIG_BRIGHTNESS_NIGHT 20  // 0-256
 #define CONFIG_BRIGHTNESS_DAY 170   // 0-256
 #define CONFIG_LAT 52.009620
 #define CONFIG_LNG 4.693660
+#define CONFIG_MQTT_ENABLED false
+#define CONFIG_MQTT_HOST ""
+#define CONFIG_MQTT_PORT 1883 // 0 - 65535
+#define CONFIG_MQTT_USERNAME ""
+#define CONFIG_MQTT_PASSWD ""
  
 #define CONFIG_START 32
 
@@ -26,6 +34,11 @@ struct ConfigStorageStruct {
   uint8_t clockBrightnessDay;
   double lat;
   double lng;
+  bool mqttEnabled;
+  char mqttHost[24];
+  uint16_t mqttPort;
+  char mqttUsername[20];
+  char mqttPasswd[20];
 };
 
 class Config {
@@ -35,6 +48,7 @@ class Config {
     static void save();
   private:
     static void read();
+    static void upgradeFromPreviousVersion();
 };
 
 #endif

@@ -26,6 +26,37 @@ With JSON:
 "gps": {
 "lat": 18446744073709551615,
 "lng": 18446744073709551615
+},
+"mqtt": {
+"enabled": true,
+"host": "yourserver.com",
+"port": 1883,
+"username": "youruser",
+"passwd": "yourpass"
 }
 }
 ```
+
+## Mqtt in Home Assistant
+To use mqtt in Home Assistant, you have to setup a broker first:
+```mqtt:
+  broker: yourserver.com
+  username: youruser 
+  password: yourpass```
+  
+ After that, you can create a light with the mqtt platform. Only change values if you really know what you are doing :)
+ ```light:
+  - platform: mqtt
+    name: "Wordclock"
+    state_topic: "wordclock/status"
+    command_topic: "wordclock/switch"
+    rgb_command_topic: "wordclock/rgb/set"
+    rgb_state_topic: "wordclock/rgb/status"
+    brightness_command_topic: "wordclock/brightness/set"
+    brightness_state_topic: "wordclock/brightness/status"
+    rgb_command_template: "{{ '%03d%03d%03d' | format(red, green, blue)}}"
+    qos: 2
+    payload_on: "on"
+    payload_off: "off"
+    retain: false
+    optimistic: false```

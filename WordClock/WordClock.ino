@@ -4,6 +4,8 @@
 #include "SunsetSunrise.h"
 #include "Wifi.h"
 #include "WebServer.h"
+#include "Mqtt.h"
+#include "Config.h"
 
 Config config;
 Display display;
@@ -12,6 +14,7 @@ API api;
 SunsetSunrise sunsetSunrise;
 Wifi wifi;
 WebServer webServer;
+Mqtt mqtt;
   
 void setup() {
   Serial.begin(115200);
@@ -25,6 +28,9 @@ void setup() {
   if (wifi.wifiConnected()) {
     api.sync();
   }
+  if (ClockConfig.mqttEnabled) {
+    mqtt.setup(&display);
+  }
 }
 
 void loop() {
@@ -33,4 +39,7 @@ void loop() {
   api.loop();
   clock.loop(&display);
   sunsetSunrise.loop(&display, &clock);
+  if (ClockConfig.mqttEnabled) {
+    mqtt.loop();
+  }
 }

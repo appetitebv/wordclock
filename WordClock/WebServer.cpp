@@ -65,6 +65,25 @@ void WebServer::handleConfigSet() {
     ClockConfig.lat = payload["gps"]["lat"];
     ClockConfig.lng = payload["gps"]["lng"];
   }
+  if (payload.containsKey("mqtt")) {
+    bool mqttEnabled = payload["mqtt"]["enabled"];
+    ClockConfig.mqttEnabled = mqttEnabled;
+    if (mqttEnabled) {
+      const char *mqttHost = payload["mqtt"]["host"];
+      const char *mqttUsername = payload["mqtt"]["username"];
+      const char *mqttPasswd = payload["mqtt"]["passwd"];
+
+      strcpy(ClockConfig.mqttHost, mqttHost);
+      strcpy(ClockConfig.mqttUsername, mqttUsername);
+      strcpy(ClockConfig.mqttPasswd, mqttPasswd);
+      ClockConfig.mqttPort = payload["mqtt"]["port"];
+    } else {
+      strcpy(ClockConfig.mqttHost, "");
+      strcpy(ClockConfig.mqttUsername, ""); 
+      strcpy(ClockConfig.mqttPasswd, "");
+    }
+  }
+   
    Config::save();
    server.send(200);
 
@@ -76,7 +95,7 @@ void WebServer::handleConfigSet() {
 
 void WebServer::handleConfigGet() {
   Serial.println("Sending JSON");
-  const size_t capacity = JSON_OBJECT_SIZE(1) + 3*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(4) + 154;
+  const size_t capacity = 4*JSON_OBJECT_SIZE(2) + 2*JSON_OBJECT_SIZE(3) + 162;
   DynamicJsonBuffer jsonBuffer(capacity);
   
   JsonObject& payload = jsonBuffer.createObject();
@@ -95,6 +114,11 @@ void WebServer::handleConfigGet() {
   JsonObject& gps = payload.createNestedObject("gps");
   gps["lat"] = ClockConfig.lat;
   gps["lng"] = ClockConfig.lng;
+
+  JsonObject& mqtt = payload.createNestedObject("mqtt");
+  mqtt["enabled"] = ClockConfig.mqttEnabled;
+  mqtt["host"] = ClockConfig.mqttHost;
+  mqtt["username"] = ClockConfig.mqttUsername;
 
   JsonObject& sunriseSunset = payload.createNestedObject("sunriseSunset");
   String sunrise;
@@ -163,4 +187,3 @@ void WebServer::printTime(Time time, String &output) {
   }
   output+=time.second;
 }
-

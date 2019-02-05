@@ -1,4 +1,3 @@
-#include <EEPROM.h>
 #include "Config.h"
 
 ConfigStorageStruct ClockConfig = {
@@ -10,7 +9,12 @@ ConfigStorageStruct ClockConfig = {
   CONFIG_BRIGHTNESS_NIGHT,
   CONFIG_BRIGHTNESS_DAY,
   CONFIG_LAT,
-  CONFIG_LNG
+  CONFIG_LNG,
+  CONFIG_MQTT_ENABLED,
+  CONFIG_MQTT_HOST,
+  CONFIG_MQTT_PORT,
+  CONFIG_MQTT_USERNAME,
+  CONFIG_MQTT_PASSWD
 };
 
 Config::Config() {
@@ -41,8 +45,7 @@ void Config::read() {
     }
   } else {
     Serial.println("Config not in EEPROM.");
-    // we should save the config as soon as we're able to update it.
-    // this->save();
+    Config::upgradeFromPreviousVersion();
   }
 }
 
@@ -52,5 +55,31 @@ void Config::save() {
     EEPROM.write(CONFIG_START + t, *((char*)&ClockConfig + t));
   }
   EEPROM.commit();
+}
+
+void Config::upgradeFromPreviousVersion() {
+  Serial.println("Trying to upgrade");
+  if (EEPROM.read(CONFIG_START) == PREVIOUS_CONFIG_VERSION[0] &&
+      EEPROM.read(CONFIG_START + 1) == PREVIOUS_CONFIG_VERSION[1] &&
+      EEPROM.read(CONFIG_START + 2) == PREVIOUS_CONFIG_VERSION[2]) {
+    Serial.println("Found old config");
+    // Read the saved ClockConfig from EEPROM
+    for (unsigned int t=0; t<sizeof(ClockConfig); t++) {
+      *((char*)&ClockConfig + t) = EEPROM.read(CONFIG_START + t);
+    }
+
+    // Update config version
+    strcpy(ClockConfig.configVersion, CONFIG_VERSION);
+
+    // Set new variables
+    ClockConfig.mqttEnabled = CONFIG_MQTT_ENABLED;
+    strcpy(ClockConfig.mqttHost, CONFIG_MQTT_HOST);
+    ClockConfig.mqttPort = CONFIG_MQTT_PORT;
+    strcpy(ClockConfig.mqttUsername, CONFIG_MQTT_USERNAME);
+    strcpy(ClockConfig.mqttPasswd, CONFIG_MQTT_PASSWD);
+
+    Config::save();
+    Serial.println("Converted to new config version");
+  }
 }
 
