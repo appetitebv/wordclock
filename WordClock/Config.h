@@ -6,10 +6,11 @@
 
 #include <EEPROM.h>
 
-#define CONFIG_VERSION "001"
+#define CONFIG_VERSION "002"
+#define PREVIOUS_CONFIG_VERSION "001"
 #define CONFIG_SSID ""
 #define CONFIG_PWD ""
-#define CONFIG_FIRM_VERSION 6
+#define CONFIG_FIRM_VERSION 7
 #define CONFIG_COLOR 8355711        // R127 G127 B127
 #define CONFIG_BRIGHTNESS_NIGHT 20  // 0-256
 #define CONFIG_BRIGHTNESS_DAY 170   // 0-256
@@ -47,6 +48,7 @@ class Config {
     static void save();
   private:
     static void read();
+    static void upgradeFromPreviousVersion();
 };
 
 #endif
