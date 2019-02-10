@@ -147,8 +147,21 @@ void Display::setBrightness(uint8_t brightness) {
 }
 
 void Display::setColor(uint8_t r, uint8_t g, uint8_t b) {
-  currentColor = pixels.Color(r, g, b);
+  this->setColor(pixels.Color(r, g, b));
+}
 
+void Display::setColor(uint32_t color) {
+  currentColor = color;
+  
+  for(int j=0; j<=pixels.numPixels();j++){
+    uint32_t color = pixels.getPixelColor(j);
+    if(color != 0) {
+      pixels.setPixelColor(j, currentColor);
+    }
+  }
+
+  pixels.show();
+  
   for(int j=0; j<=pixels.numPixels();j++){
     uint32_t color = pixels.getPixelColor(j);
     if(color != 0) {

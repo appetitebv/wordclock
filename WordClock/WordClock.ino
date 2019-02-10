@@ -20,7 +20,7 @@ void setup() {
   Serial.begin(115200);
   config.setup();
   wifi.setup();
-  webServer.setup(&wifi, &api, &sunsetSunrise);
+  webServer.setup(&wifi, &api, &sunsetSunrise, &display);
   display.setup();
   clock.setup();
   sunsetSunrise.setup();

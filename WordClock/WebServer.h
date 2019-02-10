@@ -17,10 +17,11 @@ extern struct ConfigStorageStruct ClockConfig;
 class WebServer {
     static Wifi* _wifi;
     static API* _api;
-    static SunsetSunrise * _sunsetSunrise;
+    static SunsetSunrise* _sunsetSunrise;
+    static Display* _display;
   public:
     WebServer();
-    void setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise);
+    void setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Display *display);
     void loop();
   private:
     static void handleRoot();
