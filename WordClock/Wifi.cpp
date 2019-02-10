@@ -27,7 +27,7 @@ void Wifi::startAccessPoint() {
 
 // Connect to WiFi
 void Wifi::connectToWifi() {
-  if (strcmp(ClockConfig.ssid, "") == 0) {
+  if (strcmp(ClockConfig.ssid, "") == 0 || strcmp(ClockConfig.pwd, "") == 0) {
     return;
   }
   WiFi.disconnect();

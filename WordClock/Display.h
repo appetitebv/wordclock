@@ -21,6 +21,7 @@ class Display {
     void displayTime(uint8_t hour, uint8_t minute);
     void setBrightness(uint8_t brightness);
     void setColor(uint8_t r, uint8_t g, uint8_t b);
+    void setColor(uint32_t color);
   private:
     void displayNumberAtPosition(uint8_t number, uint8_t position);
     void displayWordAt(uint8_t index);
