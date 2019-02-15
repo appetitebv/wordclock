@@ -30,27 +30,39 @@ void Mqtt::loop() {
 }
 
 void Mqtt::publishBrightness(uint8_t brightness) {
-  if (ClockConfig.mqttEnabled && client.connected()) {
+  if (ClockConfig.mqttEnabled == true && client.connected() == true) {
     char payload[4];
-    sprintf(payload,"%ld", brightness);
+    sprintf(payload, "%d", brightness);
+
+    Serial.print("Brightness payload: ");
+    Serial.println(payload);
+    
     client.publish(MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC, payload, true);
+    Serial.println("published");
   }
 }
 
 void Mqtt::publishColor(uint32_t color) {
-  if (ClockConfig.mqttEnabled && client.connected()) {
-    uint8_t colorR = color >> 16;
-    uint8_t colorG = color >> 8;
-    uint8_t colorB = color;
+  if (ClockConfig.mqttEnabled == true && client.connected() == true) {
+    uint8_t colorR = ((color >> 16) & 0xFF);
+    uint8_t colorG = ((color >> 8) & 0xFF);
+    uint8_t colorB = ((color >> 0) & 0xFF);
+    
     char r[4],g[4],b[4];
     sprintf(r,"%03d",colorR);
     sprintf(g,"%03d",colorG);
     sprintf(b,"%03d",colorB);
-    char buffer[10];
-    strcpy(buffer, r);
-    strcat(buffer, g);
-    strcat(buffer, b);
-    client.publish(MQTT_LIGHT_RGB_STATE_TOPIC, buffer, true);
+    
+    char payload[10];
+    strcpy(payload, r);
+    strcat(payload, g);
+    strcat(payload, b);
+    
+    Serial.print("Color Payload: ");
+    Serial.println(payload);
+    
+    client.publish(MQTT_LIGHT_RGB_STATE_TOPIC, payload, true);
+    Serial.println("Published");
   }
 }
 
