@@ -1,5 +1,8 @@
 #include "Mqtt.h"
 
+WiFiClient wifiClient;
+PubSubClient client(wifiClient);
+
 // MQTT: topics
 const char* MQTT_LIGHT_STATE_TOPIC = "wordclock/status";
 const char* MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC = "wordclock/brightness/status";
@@ -7,28 +10,59 @@ const char* MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC = "wordclock/brightness/set";
 const char* MQTT_LIGHT_RGB_STATE_TOPIC = "wordclock/rgb/status";
 const char* MQTT_LIGHT_RGB_COMMAND_TOPIC = "wordclock/rgb/set";
 
-WiFiClient wifiClient;
-PubSubClient client(wifiClient);
-
-Display* _display;
-
 Mqtt::Mqtt() {
 }
 
+Display* Mqtt::_display;
+
+void Mqtt::setup(Display *display) {
+  _display = display;
+  
+  client.setServer(ClockConfig.mqttHost, ClockConfig.mqttPort);
+  client.setCallback([this] (char* topic, byte* payload, unsigned int length) { this->callback(topic, payload, length); });
+}
+
+void Mqtt::loop() {
+  if (!client.connected()) {
+    this->reconnect();
+  }
+  client.loop();
+}
+
+void Mqtt::publishBrightness(uint8_t brightness) {
+  if (ClockConfig.mqttEnabled && client.connected()) {
+    char payload[4];
+    sprintf(payload,"%ld", brightness);
+    client.publish(MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC, payload, true);
+  }
+}
+
+void Mqtt::publishColor(uint32_t color) {
+  if (ClockConfig.mqttEnabled && client.connected()) {
+    uint8_t colorR = color >> 16;
+    uint8_t colorG = color >> 8;
+    uint8_t colorB = color;
+    char r[4],g[4],b[4];
+    sprintf(r,"%03d",colorR);
+    sprintf(g,"%03d",colorG);
+    sprintf(b,"%03d",colorB);
+    char buffer[10];
+    strcpy(buffer, r);
+    strcat(buffer, g);
+    strcat(buffer, b);
+    client.publish(MQTT_LIGHT_RGB_STATE_TOPIC, buffer, true);
+  }
+}
+
 void Mqtt::setRgbState(String payload) {
-  String r2 = payload.substring(0,3);
-  String g2 = payload.substring(3,6);
-  String b2 = payload.substring(6);
-
-  int r = payload.substring(0,3).toInt();
-  int g = payload.substring(3,6).toInt();
-  int b = payload.substring(6).toInt();
-
+  uint8_t r = payload.substring(0,3).toInt();
+  uint8_t g = payload.substring(3,6).toInt();
+  uint8_t b = payload.substring(6).toInt();
   _display->setColor(r, g, b);
 }
 
 void Mqtt::setBrightness(String payload) {
-  int brightness = payload.toInt();
+  uint8_t brightness = payload.toInt();
   _display->setBrightness(brightness);
 }
 
@@ -71,19 +105,4 @@ void Mqtt::reconnect() {
     Serial.print("ERROR: failed, rc=");
     Serial.print(client.state());
   }
-}
-
-
-void Mqtt::setup(Display *display) {
-  _display = display;
-  
-  client.setServer(ClockConfig.mqttHost, ClockConfig.mqttPort);
-  client.setCallback([this] (char* topic, byte* payload, unsigned int length) { this->callback(topic, payload, length); });
-}
-
-void Mqtt::loop() {
-  if (!client.connected()) {
-    this->reconnect();
-  }
-  client.loop();
 }

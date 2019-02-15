@@ -15,8 +15,11 @@ Time LastChange {
 SunsetSunrise::SunsetSunrise() {
 }
 
-void SunsetSunrise::setup() {
+Mqtt* SunsetSunrise::_mqtt;
+
+void SunsetSunrise::setup(Mqtt *mqtt) {
   Serial.println("SunsetSunrise::setup");
+  _mqtt = mqtt;
 }
 
 void SunsetSunrise::loop(Display *display, Clock *clock) {
@@ -56,9 +59,11 @@ Time SunsetSunrise::sunset() {
 
 void SunsetSunrise::setDay(Display *display) {
   display->setBrightness(ClockConfig.clockBrightnessDay);
+  _mqtt->publishBrightness(ClockConfig.clockBrightnessDay);
 }
 
 void SunsetSunrise::setNight(Display *display) {
   display->setBrightness(ClockConfig.clockBrightnessNight);
+  _mqtt->publishBrightness(ClockConfig.clockBrightnessDay);
 }
 

@@ -10,6 +10,7 @@
 #include "Wifi.h"
 #include "Config.h"
 #include "SunsetSunrise.h"
+#include "Mqtt.h"
 extern struct ConfigStorageStruct ClockConfig;
 
 #define SERVER_DOMAIN "wordclock"
@@ -19,9 +20,10 @@ class WebServer {
     static API* _api;
     static SunsetSunrise* _sunsetSunrise;
     static Display* _display;
+    static Mqtt* _mqtt;
   public:
     WebServer();
-    void setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Display *display);
+    void setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Display *display, Mqtt *mqtt);
     void loop();
   private:
     static void handleRoot();

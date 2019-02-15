@@ -20,10 +20,10 @@ void setup() {
   Serial.begin(115200);
   config.setup();
   wifi.setup();
-  webServer.setup(&wifi, &api, &sunsetSunrise, &display);
+  webServer.setup(&wifi, &api, &sunsetSunrise, &display, &mqtt);
   display.setup();
   clock.setup();
-  sunsetSunrise.setup();
+  sunsetSunrise.setup(&mqtt);
   api.setup(&clock, &sunsetSunrise);
   if (wifi.wifiConnected()) {
     api.sync();
