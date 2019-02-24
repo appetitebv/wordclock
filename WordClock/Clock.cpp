@@ -9,6 +9,7 @@ Time LastDisplayed = {
 };
 
 Clock::Clock() {
+  _timeInitiallySet = false;
 }
 
 void Clock::setup() {
@@ -37,12 +38,16 @@ void Clock::loop(Display *display) {
 }
 
 void Clock::setTime(Time time) {
+  _timeInitiallySet = true;
   RTC.setYear(time.year);
   RTC.setMonth(time.month);
   RTC.setDate(time.day);
   RTC.setHour(time.hour);
   RTC.setMinute(time.minute);
   RTC.setSecond(time.second);
+
+  // Force display time
+  LastDisplayed = {0,0,0,0,0,0};
 }
 
 uint16_t Clock::getYear() {
@@ -68,6 +73,9 @@ uint8_t Clock::getMinute() {
 }
 
 Time Clock::getTime() {
+  if (_timeInitiallySet == false) {
+    return LastDisplayed;
+  }
   DateTime dateTime = RTClib::now();
   Time CurrentTime {
     dateTime.year(),

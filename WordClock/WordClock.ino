@@ -18,16 +18,16 @@ Mqtt mqtt;
   
 void setup() {
   Serial.begin(115200);
+  
+  display.setup();
+  display.startLoading();
+  
   config.setup();
   wifi.setup();
   webServer.setup(&wifi, &api, &sunsetSunrise, &display, &mqtt);
-  display.setup();
   clock.setup();
   sunsetSunrise.setup(&mqtt);
   api.setup(&clock, &sunsetSunrise);
-  if (wifi.wifiConnected()) {
-    api.sync();
-  }
   if (ClockConfig.mqttEnabled) {
     mqtt.setup(&display);
   }
@@ -35,11 +35,15 @@ void setup() {
 
 void loop() {
   wifi.loop();
+  display.loop();
+  if (wifi.wifiConnected()) {
+    display.stopLoading();
+    api.loop();
+    if (ClockConfig.mqttEnabled) {
+      mqtt.loop();
+    }
+  }
   webServer.loop();
-  api.loop();
   clock.loop(&display);
   sunsetSunrise.loop(&display, &clock);
-  if (ClockConfig.mqttEnabled) {
-    mqtt.loop();
-  }
 }

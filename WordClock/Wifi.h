@@ -17,7 +17,11 @@ class Wifi {
     void loop();
     bool wifiConnected();
     void connectToWifi();
+    void reconnect();
   private:
+    bool _isConnecting;
+    bool _isAPModeActive;
+    unsigned long _connectingStarted;
     void startAccessPoint();
     void accessPointSSID(char *ssid);
 };

@@ -98,8 +98,7 @@ void WebServer::handleConfigSet() {
    server.send(200);
 
    if (reconnect) {
-    _wifi->connectToWifi();
-    _api->sync();
+    _wifi->reconnect();
    }
 }
 

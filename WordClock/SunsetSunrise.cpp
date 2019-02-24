@@ -25,6 +25,10 @@ void SunsetSunrise::setup(Mqtt *mqtt) {
 void SunsetSunrise::loop(Display *display, Clock *clock) {
   Time currentTime = clock->getTime();
 
+  if (currentTime.year == 0) {
+    return;
+  }
+
   // First check if we need to set brightness initially, on startup
   if (LastChange.hour == 0 && LastChange.minute == 0) {
     if ((currentTime.hour >= Sunset.hour && currentTime.minute >= Sunset.minute) || (currentTime.hour <= Sunrise.hour && currentTime.minute < Sunrise.minute)) {
