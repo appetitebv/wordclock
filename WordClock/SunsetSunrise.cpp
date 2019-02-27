@@ -68,6 +68,6 @@ void SunsetSunrise::setDay(Display *display) {
 
 void SunsetSunrise::setNight(Display *display) {
   display->setBrightness(ClockConfig.clockBrightnessNight);
-  _mqtt->publishBrightness(ClockConfig.clockBrightnessDay);
+  _mqtt->publishBrightness(ClockConfig.clockBrightnessNight);
 }
 
