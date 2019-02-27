@@ -14,12 +14,14 @@ SunsetSunrise* API::_sunsetSunrise;
 
 void API::setup(Clock *clock, SunsetSunrise *sunsetSunrise) {
   Serial.println("API::setup");
+  _clock = clock;
+  _sunsetSunrise = sunsetSunrise;
 }
 
 void API::loop() {
   // Sync at 01:00 AM
   Time time = _clock->getTime();
-  if (LastSync.day != time.day && time.hour == 1 && time.minute == 0) {
+  if ((LastSync.day != time.day && time.hour == 1 && time.minute == 0) || (LastSync.year == 0)) {
     this->sync();
   }
 }

@@ -9,15 +9,17 @@ Wifi* WebServer::_wifi;
 API* WebServer::_api;
 SunsetSunrise* WebServer::_sunsetSunrise;
 Display* WebServer::_display;
+Mqtt* WebServer::_mqtt;
 
 const char* PROGMEM rootHTML = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1,maximum-scale=1\"><title>Word Clock</title><link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css\"></head><body><div class=\"container\"><h1>Word Clock</h1><div class=\"form-group\"><label for=\"ssid\">Network</label><input type=\"text\" class=\"form-control\" id=\"ssid\" placeholder=\"SSID\"></div><div class=\"form-group\"><label for=\"password\">Password</label><input type=\"password\" class=\"form-control\" id=\"password\" placeholder=\"Password\"></div><button type=\"submit\" class=\"btn btn-primary\" id=\"save\">Save</button></div><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script><script language=\"javascript\" type=\"text/javascript\">$(\"#save\").click(function(){$.ajax({url:\"/config/set\",type:\"POST\",contentType:\"application/json\",data:JSON.stringify({wifi:{ssid:$(\"#ssid\").val(),pwd:$(\"#password\").val()}}),dataType:\"json\"});});</script></body></html>";
 
-void WebServer::setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Display *display) {
+void WebServer::setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Display *display, Mqtt *mqtt) {
   Serial.println("Server::setup");
   _wifi = wifi;
   _api = api;
   _sunsetSunrise = sunsetSunrise;
   _display = display;
+  _mqtt = mqtt;
   if (!MDNS.begin(SERVER_DOMAIN)) {
     Serial.println("Error setting up MDNS responder!");
   }
@@ -61,11 +63,13 @@ void WebServer::handleConfigSet() {
   if (payload.containsKey("clock")) {
     ClockConfig.clockColor = payload["clock"]["color"];
     _display->setColor(ClockConfig.clockColor);
+    _mqtt->publishColor(ClockConfig.clockColor);
     
     ClockConfig.clockBrightnessDay = payload["clock"]["brightness"]["day"];
     ClockConfig.clockBrightnessNight = payload["clock"]["brightness"]["night"];
     // TODO: How to know here wether to set day or night brightness?
-    _display->setBrightness(ClockConfig.clockBrightnessDay); 
+    _display->setBrightness(ClockConfig.clockBrightnessDay);
+    _mqtt->publishBrightness(ClockConfig.clockBrightnessDay);
   }
   if (payload.containsKey("gps")) {
     ClockConfig.lat = payload["gps"]["lat"];
@@ -94,8 +98,7 @@ void WebServer::handleConfigSet() {
    server.send(200);
 
    if (reconnect) {
-    _wifi->connectToWifi();
-    _api->sync();
+    _wifi->reconnect();
    }
 }
 

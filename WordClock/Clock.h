@@ -23,6 +23,7 @@ class Clock {
     void setTime(Time time);
     Time getTime();
   private:
+    bool _timeInitiallySet;
     uint16_t getYear();
     uint8_t getMonth();
     uint8_t getDate();
