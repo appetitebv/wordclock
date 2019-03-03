@@ -3,12 +3,14 @@
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXELS_COUNT, PIXELS_PIN, NEO_GRB + NEO_KHZ800);
 
 uint32_t currentColor;
+uint8_t currentBrightness;
 
 Display::Display() {
 }
 
 void Display::setup() {
   currentColor = ClockConfig.clockColor;
+  currentBrightness = ClockConfig.clockBrightnessNight;
   _isLoading = false;
   
   pixels.begin();
@@ -83,6 +85,13 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
   }
 }
 
+uint32_t Display::getCurrentColor() {
+  return currentColor;
+}
+
+uint8_t Display::getCurrentBrightness() {
+  return currentBrightness;
+}
 
 /**
  * Reading a word from the PROGMEM
@@ -187,6 +196,7 @@ void Display::displayTime(uint8_t hour, uint8_t minute) {
 }
 
 void Display::setBrightness(uint8_t brightness) {
+  currentBrightness = brightness;
   pixels.setBrightness(brightness);
   pixels.show();
 }

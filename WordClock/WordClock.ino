@@ -24,7 +24,7 @@ void setup() {
   
   config.setup();
   wifi.setup();
-  webServer.setup(&wifi, &api, &sunsetSunrise, &display, &mqtt);
+  webServer.setup(&wifi, &api, &sunsetSunrise, &display, &mqtt, &clock);
   clock.setup();
   sunsetSunrise.setup(&mqtt);
   api.setup(&clock, &sunsetSunrise);

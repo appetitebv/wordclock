@@ -23,6 +23,8 @@ class Display {
     void setBrightness(uint8_t brightness);
     void setColor(uint8_t r, uint8_t g, uint8_t b);
     void setColor(uint32_t color);
+    uint32_t getCurrentColor();
+    uint8_t getCurrentBrightness();
     void startLoading();
     void stopLoading();
   private:

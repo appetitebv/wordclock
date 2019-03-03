@@ -22,8 +22,10 @@ class Clock {
     void loop(Display *display);
     void setTime(Time time);
     Time getTime();
+    Time getBootTime();
   private:
     bool _timeInitiallySet;
+    Time _bootTime;
     uint16_t getYear();
     uint8_t getMonth();
     uint8_t getDate();
