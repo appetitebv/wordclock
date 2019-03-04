@@ -10,22 +10,26 @@ API* WebServer::_api;
 SunsetSunrise* WebServer::_sunsetSunrise;
 Display* WebServer::_display;
 Mqtt* WebServer::_mqtt;
+Clock* WebServer::_clock;
 
 const char* PROGMEM rootHTML = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1,maximum-scale=1\"><title>Word Clock</title><link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css\"></head><body><div class=\"container\"><h1>Word Clock</h1><div class=\"form-group\"><label for=\"ssid\">Network</label><input type=\"text\" class=\"form-control\" id=\"ssid\" placeholder=\"SSID\"></div><div class=\"form-group\"><label for=\"password\">Password</label><input type=\"password\" class=\"form-control\" id=\"password\" placeholder=\"Password\"></div><button type=\"submit\" class=\"btn btn-primary\" id=\"save\">Save</button></div><script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script><script language=\"javascript\" type=\"text/javascript\">$(\"#save\").click(function(){$.ajax({url:\"/config/set\",type:\"POST\",contentType:\"application/json\",data:JSON.stringify({wifi:{ssid:$(\"#ssid\").val(),pwd:$(\"#password\").val()}}),dataType:\"json\"});});</script></body></html>";
 
-void WebServer::setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Display *display, Mqtt *mqtt) {
+void WebServer::setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Display *display, Mqtt *mqtt, Clock *clock) {
   Serial.println("Server::setup");
   _wifi = wifi;
   _api = api;
   _sunsetSunrise = sunsetSunrise;
   _display = display;
   _mqtt = mqtt;
+  _clock = clock;
   if (!MDNS.begin(SERVER_DOMAIN)) {
     Serial.println("Error setting up MDNS responder!");
   }
   server.on("/", HTTP_GET, handleRoot);
   server.on("", HTTP_GET, handleRoot);
   server.on("/config/set", HTTP_POST, handleConfigSet);
+  server.on("/color/set", HTTP_POST, handleColorSet);
+  server.on("/brightness/set", HTTP_POST, handleBrightnessSet);
   server.on("/config/get", HTTP_GET, handleConfigGet);
   server.onNotFound(this->handleNotFound);
   server.begin();
@@ -102,23 +106,67 @@ void WebServer::handleConfigSet() {
    }
 }
 
+void WebServer::handleColorSet() {
+  const size_t capacity = JSON_OBJECT_SIZE(1) + 40;
+  DynamicJsonBuffer jsonBuffer(capacity);
+  JsonObject& payload = jsonBuffer.parseObject(server.arg("plain"));
+
+  if (!payload.success()) {
+    server.send(500);
+    return;
+  }
+  
+  if (payload.containsKey("color")) {
+    uint32_t color = payload["color"];
+    _display->setColor(color);
+    _mqtt->publishColor(color);
+  }
+  
+  server.send(200);
+}
+
+void WebServer::handleBrightnessSet() {
+  const size_t capacity = JSON_OBJECT_SIZE(1) + 40;
+  DynamicJsonBuffer jsonBuffer(capacity);
+  JsonObject& payload = jsonBuffer.parseObject(server.arg("plain"));
+
+  if (!payload.success()) {
+    server.send(500);
+    return;
+  }
+
+  if (payload.containsKey("brightness")) {
+    uint8_t brightness = payload["brightness"];
+    _display->setBrightness(brightness);
+    _mqtt->publishBrightness(brightness);
+  }
+  
+  server.send(200);
+}
+
 void WebServer::handleConfigGet() {
   Serial.println("Sending JSON");
-  const size_t capacity = 4*JSON_OBJECT_SIZE(2) + 2*JSON_OBJECT_SIZE(3) + 162;
+  const size_t capacity = 2*JSON_OBJECT_SIZE(2) + 4*JSON_OBJECT_SIZE(3) + 162;
   DynamicJsonBuffer jsonBuffer(capacity);
   
   JsonObject& payload = jsonBuffer.createObject();
   payload["version"] = ClockConfig.firmwareVersion;
+
+  String bootTime;
+  WebServer::printTime(_clock->getBootTime(), bootTime);
+  payload["bootTime"] = bootTime;
   
   JsonObject& wifi = payload.createNestedObject("wifi");
   wifi["ssid"] = ClockConfig.ssid;
   
   JsonObject& clock = payload.createNestedObject("clock");
   clock["color"] = ClockConfig.clockColor;
+  clock["currentColor"] = _display->getCurrentColor();
   
   JsonObject& brightness = clock.createNestedObject("brightness");
   brightness["day"] = ClockConfig.clockBrightnessDay;
   brightness["night"] = ClockConfig.clockBrightnessNight;
+  brightness["current"] = _display->getCurrentBrightness();
 
   JsonObject& gps = payload.createNestedObject("gps");
   gps["lat"] = ClockConfig.lat;

@@ -10,6 +10,7 @@ Time LastDisplayed = {
 
 Clock::Clock() {
   _timeInitiallySet = false;
+  _bootTime = LastDisplayed;
 }
 
 void Clock::setup() {
@@ -38,6 +39,9 @@ void Clock::loop(Display *display) {
 }
 
 void Clock::setTime(Time time) {
+  if (!_timeInitiallySet) {
+    _bootTime = time;
+  }
   _timeInitiallySet = true;
   RTC.setYear(time.year);
   RTC.setMonth(time.month);
@@ -90,5 +94,9 @@ Time Clock::getTime() {
 
 uint8_t Clock::getSecond() {
   return RTC.getSecond();
+}
+
+Time Clock::getBootTime() {
+  return _bootTime;
 }
 
