@@ -30,14 +30,14 @@ void Display::displayTemperature(uint8_t temperature) {
 //  Number: number to display
 //  Position: 0 = left, 1 = right
 void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
-  uint8_t cols = Display::numberMappingCols();
-  uint8_t rows = Display::numberMappingRows();
+  uint8_t cols = Mappings::numberMappingCols();
+  uint8_t rows = Mappings::numberMappingRows();
   uint8_t shiftX = position*cols+position*1;
   for (uint8_t y=0;y<rows;y++) {
     for (uint8_t x=0;x<cols;x++) {
-      uint8_t value = pgm_read_byte(&Display::numberMapping[number][y][x]);
+      uint8_t value = pgm_read_byte(&Mappings::numberMapping[number][y][x]);
       if (value == 1) {
-        uint8_t pixel = pgm_read_byte(&Display::displayMapping[y][x+shiftX]);
+        uint8_t pixel = pgm_read_byte(&Mappings::displayMapping[y][x+shiftX]);
         pixels.setPixelColor(pixel, currentColor);
       }
     }
@@ -52,7 +52,7 @@ void Display::displayWordAt(uint8_t index) {
 
   //size is always 6, hardcodede for now
   for (uint8_t i=0; i < 6; i++) {
-    uint8_t pixel = pgm_read_byte(&Display::wordMapping[index][i]);
+    uint8_t pixel = pgm_read_byte(&Mappings::wordMapping[index][i]);
     if (pixel != 99) {
       pixels.setPixelColor(pixel, currentColor);
     }
@@ -171,169 +171,3 @@ void Display::setColor(uint32_t color) {
 
   pixels.show();
 }
-
-uint8_t Display::numberMappingRows() {
-  uint8_t rows = sizeof Display::numberMapping[0] / sizeof Display::numberMapping[0][0];
-  return rows;
-}
-
-uint8_t Display::numberMappingCols() {
-  uint8_t cols = sizeof Display::numberMapping[0][0] / sizeof(uint8_t);
-  return cols;
-}
-
-uint8_t Display::wordMapping[23][6] PROGMEM = {
-  // Enter 99 to ignore
-  
-  // hour
-  {74,75,76,99,99,99}, // Een
-  {72,73,74,75,99,99}, // Twee
-  {36,37,38,39,99,99}, // Drie
-  {71,70,69,68,99,99}, // Vier
-  {66,65,64,63,99,99}, // Vijf
-  {29,28,27,99,99,99}, // Zes
-  {54,55,56,57,58,99}, // Zeven
-  {41,42,43,44,99,99}, // Acht
-  {50,49,48,47,46,99}, // Negen
-  {53,52,51,50,99,99}, // Tien
-  {60,61,62,99,99,99}, // Elf
-  {35,34,33,32,31,30}, // Twaalf
-
-  // Words
-  { 0, 1, 2, 3,99,99}, // Vijf
-  { 4, 5, 6, 7, 8,99}, // Kwart
-  {17,16,15,14,99,99}, // Tien
-  {12,11,10, 9,99,99}, // Voor
-  {18,19,20,21,99,99}, // Over
-  {23,24,25,26,99,99}, // Half
-  {78,79,80,99,99,99}, // Uur
-
-  // minute
-  {84,99,99,99,99,99}, // 1
-  {84,83,99,99,99,99}, // 2
-  {84,83,82,99,99,99}, // 3
-  {84,83,82,81,99,99}  // 4
-};
-
-uint8_t Display::displayMapping[9][9] PROGMEM = {
-  { 0, 1, 2, 3, 4, 5, 6, 7, 8},
-  {17,16,15,14,13,12,11,10, 9},
-  {18,19,20,21,22,23,24,25,26},
-  {35,34,33,32,31,30,29,28,27},
-  {36,37,38,39,40,41,42,43,44},
-  {53,52,51,50,49,48,47,46,45},
-  {54,55,56,57,58,59,60,61,62},
-  {71,70,69,68,67,66,65,64,63},
-  {72,73,74,75,76,77,78,79,80}
-};
-
-
-uint8_t Display::numberMapping[10][9][4] PROGMEM = {
-  { //0
-    {1,1,1,1},
-    {1,1,1,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,1,1,1},
-    {1,1,1,1}
-  },
-    { //1
-    {0,1,1,0},
-    {0,1,1,0},
-    {0,1,1,0},
-    {0,1,1,0},
-    {0,1,1,0},
-    {0,1,1,0},
-    {0,1,1,0},
-    {0,1,1,0},
-    {0,1,1,0}
-  },
-  { //2
-    {1,1,1,1},
-    {1,1,1,1},
-    {0,0,1,1},
-    {0,0,1,1},
-    {1,1,1,1},
-    {1,1,0,0},
-    {1,1,0,0},
-    {1,1,1,1},
-    {1,1,1,1}
-  },
-  { // 3
-    {1,1,1,1},
-    {1,1,1,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {1,1,1,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {1,1,1,1},
-    {1,1,1,1}
-  },
-    { // 4
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,1,1,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {0,0,0,1}
-  },
-  { // 5
-    {1,1,1,1},
-    {1,1,1,1},
-    {1,0,0,0},
-    {1,0,0,0},
-    {1,1,1,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {1,1,1,1},
-    {1,1,1,1}
-  },  { // 6
-    {1,1,1,1},
-    {1,1,1,1},
-    {1,0,0,0},
-    {1,0,0,0},
-    {1,1,1,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,1,1,1},
-    {1,1,1,1}
-  },  { // 7
-    {1,1,1,1},
-    {1,1,1,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {0,0,0,1},
-    {0,0,0,1}
-  },  { // 8
-    {1,1,1,1},
-    {1,1,1,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,1,1,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,1,1,1},
-    {1,1,1,1},
-  },
-  { // 9
-    {1,1,1,1},
-    {1,1,1,1},
-    {1,0,0,1},
-    {1,0,0,1},
-    {1,1,1,1},
-    {0,0,1,1},
-    {0,0,1,1},
-    {1,1,1,1},
-    {1,1,1,1}
-  }
-};
