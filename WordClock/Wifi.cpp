@@ -4,6 +4,8 @@ Wifi::Wifi() {
 }
 
 void Wifi::setup() {
+  _isConnecting = false;
+  _isAPModeActive = false;
   Serial.println("Wifi::setup");
   if (strcmp(ClockConfig.ssid, "") == 0) {
     this->startAccessPoint();
@@ -13,9 +15,7 @@ void Wifi::setup() {
 }
 
 void Wifi::loop() {
-  if (this->wifiConnected() == false) {
-    this->connectToWifi();
-  }
+  this->connectToWifi();
 }
 
 void Wifi::startAccessPoint() {
@@ -23,37 +23,53 @@ void Wifi::startAccessPoint() {
   char ssid[24];
   this->accessPointSSID(ssid);
   WiFi.softAP(ssid, NULL, 11);
+  _isAPModeActive = true;
 }
 
 // Connect to WiFi
 void Wifi::connectToWifi() {
-  if (strcmp(ClockConfig.ssid, "") == 0 || strcmp(ClockConfig.pwd, "") == 0) {
+  if (_isAPModeActive) {
     return;
   }
-  WiFi.disconnect();
-  Serial.print("Connect to: ");
-  Serial.println(ClockConfig.ssid);
-  WiFi.begin(ClockConfig.ssid, ClockConfig.pwd);
-  uint8_t wifiConnectWait = 0;
-  while (WiFi.status() != WL_CONNECTED && wifiConnectWait < 20) {
-    // TODO: Print some status to the display?
-    Serial.print(".");
-    delay(500);
-    wifiConnectWait = wifiConnectWait+1;
-  }
-  Serial.println();
-
-  if (WiFi.status() == WL_CONNECTED) {
+  if (!_isConnecting && !this->wifiConnected()) {
+    Serial.println("Should connect");
+    if (strcmp(ClockConfig.ssid, "") == 0 || strcmp(ClockConfig.pwd, "") == 0) {
+      Serial.println("ssid or pwd empty");
+      this->startAccessPoint();
+      return;
+    }
+    _isConnecting = true;
+    _connectingStarted = millis();
+    Serial.println(_connectingStarted);
+    WiFi.disconnect();
+    Serial.print("Connect to: ");
+    Serial.println(ClockConfig.ssid);
+    WiFi.begin(ClockConfig.ssid, ClockConfig.pwd);
+    uint8_t wifiConnectWait = 0;
+  } else if (WiFi.status() != WL_CONNECTED) {
+    if ((millis()-_connectingStarted) >= 30000) {
+      Serial.println("Connecting timeout!");
+      this->startAccessPoint();
+      _isConnecting = false;
+    }
+  } else if (_isConnecting) {
+    Serial.println("Connected! stop connecting");
     // Disable AP.
     WiFi.softAPdisconnect(true);
     
     Serial.println("WiFi Connected");
     Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP()); 
-  } else {
-    Serial.println("Unable to connect to WiFi.");
-    this->startAccessPoint();
+    Serial.println(WiFi.localIP());
+    _isConnecting = false;
   }
+}
+
+void Wifi::reconnect() {
+  _isConnecting = false;
+  _isAPModeActive = false;
+  Serial.println("Reconnect");
+  WiFi.disconnect();
+  this->connectToWifi();
 }
 
 // Verify that WiFi is connected

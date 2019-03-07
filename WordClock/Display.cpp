@@ -3,19 +3,57 @@
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(PIXELS_COUNT, PIXELS_PIN, NEO_GRB + NEO_KHZ800);
 
 uint32_t currentColor;
+uint8_t currentBrightness;
 
 Display::Display() {
 }
 
 void Display::setup() {
   currentColor = ClockConfig.clockColor;
+  currentBrightness = ClockConfig.clockBrightnessNight;
+  _isLoading = false;
   
   pixels.begin();
   pixels.setBrightness(ClockConfig.clockBrightnessNight); // Just to be sure as default, this will be updated when sunrise/sunset is available.
   pixels.clear();
 }
 
+void Display::loop() {
+  this->loopLoading();
+}
+
+void Display::loopLoading() {
+  if (!_isLoading) {
+    return;
+  }
+  unsigned long currentMillis = millis();
+  if (currentMillis - _lastLoadingFrame < 42) {
+    // only draw 1 frame every 42 milliseconds
+    return;
+  }
+  _lastLoadingFrame = currentMillis;
+  uint16_t animationTime = 1000;
+  unsigned long loadingTime = (currentMillis - _loadingStarted);
+  float modulo = loadingTime % animationTime;
+  float progress = modulo/animationTime;
+  int degrees = 360.0*progress;
+
+  double brightness1 = this->brightness(degrees);
+  double brightness2 = this->brightness(degrees+30);
+  double brightness3 = this->brightness(degrees+60);
+  double brightness4 = this->brightness(degrees+90);
+  pixels.clear();
+  pixels.setPixelColor(81, pixels.Color(brightness1,brightness1,brightness1));
+  pixels.setPixelColor(82, pixels.Color(brightness2,brightness2,brightness2));
+  pixels.setPixelColor(83, pixels.Color(brightness3,brightness3,brightness3));
+  pixels.setPixelColor(84, pixels.Color(brightness4,brightness4,brightness4));
+  pixels.show();
+}
+
 void Display::displayTemperature(uint8_t temperature) {
+  if (_isLoading) {
+    return;
+  }
   // Only possible to display temperature of 2 digits.
   if (temperature < 100) {
     uint8_t lastDigit = temperature % 10;
@@ -30,6 +68,9 @@ void Display::displayTemperature(uint8_t temperature) {
 //  Number: number to display
 //  Position: 0 = left, 1 = right
 void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
+  if (_isLoading) {
+    return;
+  }
   uint8_t cols = Mappings::numberMappingCols();
   uint8_t rows = Mappings::numberMappingRows();
   uint8_t shiftX = position*cols+position*1;
@@ -44,11 +85,21 @@ void Display::displayNumberAtPosition(uint8_t number, uint8_t position) {
   }
 }
 
+uint32_t Display::getCurrentColor() {
+  return currentColor;
+}
+
+uint8_t Display::getCurrentBrightness() {
+  return currentBrightness;
+}
 
 /**
  * Reading a word from the PROGMEM
  */
 void Display::displayWordAt(uint8_t index) {
+  if (_isLoading) {
+    return;
+  }
 
   //size is always 6, hardcodede for now
   for (uint8_t i=0; i < 6; i++) {
@@ -63,6 +114,9 @@ void Display::displayWordAt(uint8_t index) {
  * Display the time on the display
  */
 void Display::displayTime(uint8_t hour, uint8_t minute) {
+  if (_isLoading) {
+    return;
+  }
   pixels.clear();
 
   // 10:20 => tien voor half ELF
@@ -142,6 +196,7 @@ void Display::displayTime(uint8_t hour, uint8_t minute) {
 }
 
 void Display::setBrightness(uint8_t brightness) {
+  currentBrightness = brightness;
   pixels.setBrightness(brightness);
   pixels.show();
 }
@@ -152,6 +207,10 @@ void Display::setColor(uint8_t r, uint8_t g, uint8_t b) {
 
 void Display::setColor(uint32_t color) {
   currentColor = color;
+
+  if (_isLoading) {
+    return;
+  }
   
   for(int j=0; j<=pixels.numPixels();j++){
     uint32_t color = pixels.getPixelColor(j);
@@ -170,4 +229,21 @@ void Display::setColor(uint32_t color) {
   }
 
   pixels.show();
+}
+
+double Display::brightness(int deg) {
+  return 255.0*0.5*(1.0+sin(deg2rad(deg)));
+}
+
+void Display::startLoading() {
+  _isLoading = true;
+  _loadingStarted = millis();
+}
+
+void Display::stopLoading() {
+  _isLoading = false;
+}
+
+float Display::deg2rad(int deg) {
+  return (float)deg*PI/180.0;
 }

@@ -18,14 +18,25 @@ class Display {
   public:
     Display();
     void setup();
+    void loop();
     void displayTemperature(uint8_t temperature);
     void displayTime(uint8_t hour, uint8_t minute);
     void setBrightness(uint8_t brightness);
     void setColor(uint8_t r, uint8_t g, uint8_t b);
     void setColor(uint32_t color);
+    uint32_t getCurrentColor();
+    uint8_t getCurrentBrightness();
+    void startLoading();
+    void stopLoading();
   private:
     void displayNumberAtPosition(uint8_t number, uint8_t position);
     void displayWordAt(uint8_t index);
+    float deg2rad(int deg);
+    double brightness(int deg);
+    void loopLoading();
+    bool _isLoading;
+    unsigned long _loadingStarted;
+    unsigned long _lastLoadingFrame;
 };
 
 #endif

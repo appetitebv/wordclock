@@ -11,11 +11,13 @@
 extern struct ConfigStorageStruct ClockConfig;
 
 class Mqtt {
-  Display* _display;
+  static Display* _display;
   public:
     Mqtt();
     void setup(Display *display);
     void loop();
+    void publishBrightness(uint8_t brightness);
+    void publishColor(uint32_t color);
   private:
     void setRgbState(String payload);
     void setBrightness(String payload);

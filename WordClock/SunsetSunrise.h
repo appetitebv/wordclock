@@ -5,13 +5,15 @@
 #include "Config.h"
 #include "Clock.h"
 #include "Display.h"
+#include "Mqtt.h"
 
 extern struct ConfigStorageStruct ClockConfig;
 
 class SunsetSunrise {
+  static Mqtt* _mqtt;
   public:
     SunsetSunrise();
-    void setup();
+    void setup(Mqtt *mqtt);
     void set(Time sunrise, Time sunset);
     void loop(Display *display, Clock *clock);
     Time sunrise();
