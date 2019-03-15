@@ -33,6 +33,9 @@ void WebServer::setup(Wifi *wifi, API *api, SunsetSunrise *sunsetSunrise, Displa
   server.on("/config/get", HTTP_GET, handleConfigGet);
   server.onNotFound(this->handleNotFound);
   server.begin();
+
+   // Add service to MDNS-SD
+  MDNS.addService("http", "tcp", 80);
 }
 
 void WebServer::loop() {
