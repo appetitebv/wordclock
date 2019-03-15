@@ -19,9 +19,9 @@ void API::setup(Clock *clock, SunsetSunrise *sunsetSunrise) {
 }
 
 void API::loop() {
-  // Sync at 01:00 AM
+  // Sync at 03:05 AM
   Time time = _clock->getTime();
-  if ((LastSync.day != time.day && time.hour == 1 && time.minute == 0) || (LastSync.year == 0)) {
+  if ((LastSync.day != time.day && time.hour == 3 && time.minute == 5) || (LastSync.year == 0)) {
     this->sync();
   }
 }
