@@ -9,7 +9,7 @@
 
 Config config;
 Display display;
-Clock clock;
+Clock wordClock;
 API api;
 SunsetSunrise sunsetSunrise;
 Wifi wifi;
@@ -24,10 +24,10 @@ void setup() {
   
   config.setup();
   wifi.setup();
-  webServer.setup(&wifi, &api, &sunsetSunrise, &display, &mqtt, &clock);
-  clock.setup();
+  webServer.setup(&wifi, &api, &sunsetSunrise, &display, &mqtt, &wordClock);
+  wordClock.setup();
   sunsetSunrise.setup(&mqtt);
-  api.setup(&clock, &sunsetSunrise);
+  api.setup(&wordClock, &sunsetSunrise);
   if (ClockConfig.mqttEnabled) {
     mqtt.setup(&display);
   }
@@ -44,6 +44,6 @@ void loop() {
     }
   }
   webServer.loop();
-  clock.loop(&display);
-  sunsetSunrise.loop(&display, &clock);
+  wordClock.loop(&display);
+  sunsetSunrise.loop(&display, &wordClock);
 }
