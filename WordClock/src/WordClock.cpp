@@ -8,13 +8,14 @@
 #include "Config.h"
 
 Config config;
+WiFiClient wifiClient;
 Display display;
 Clock wordClock;
-API api;
 SunsetSunrise sunsetSunrise;
+API api(wordClock, sunsetSunrise, wifiClient);
 Wifi wifi;
 WebServer webServer;
-Mqtt mqtt;
+Mqtt mqtt(display, wifiClient);
   
 void setup() {
   Serial.begin(115200);
@@ -27,9 +28,9 @@ void setup() {
   webServer.setup(&wifi, &api, &sunsetSunrise, &display, &mqtt, &wordClock);
   wordClock.setup();
   sunsetSunrise.setup(&mqtt);
-  api.setup(&wordClock, &sunsetSunrise);
+  api.setup();
   if (ClockConfig.mqttEnabled) {
-    mqtt.setup(&display);
+    mqtt.setup();
   }
 }
 
