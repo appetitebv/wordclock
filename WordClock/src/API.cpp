@@ -6,21 +6,13 @@ Time LastSync = {
   0,0,0,0,0,0
 };
 
-API::API() {
-}
-
-Clock* API::_clock;
-SunsetSunrise* API::_sunsetSunrise;
-
-void API::setup(Clock *clock, SunsetSunrise *sunsetSunrise) {
+void API::setup() {
   Serial.println("API::setup");
-  _clock = clock;
-  _sunsetSunrise = sunsetSunrise;
 }
 
 void API::loop() {
   // Sync at 03:05 AM
-  Time time = _clock->getTime();
+  Time time = _clock.getTime();
   if ((LastSync.day != time.day && time.hour == 3 && time.minute == 5) || (LastSync.year == 0)) {
     this->sync();
   }
@@ -42,8 +34,7 @@ void API::sync() {
 
   // Write json object to buffer
   obj.printTo(output, 128);
-  
-  http.begin("http://wordclock.nl/api/status");
+  http.begin(_wifiClient, "http://wordclock.nl/api/status");
   http.addHeader("Content-Type", "application/json");
   http.setTimeout(3000); // just in case
   int httpCode = http.POST(output);
@@ -65,7 +56,7 @@ void API::sync() {
       // Parse current time
       auto currentTimeString = payload["currentTime"].as<char*>();
       Time currentTime = this->parseTime(currentTimeString);
-      _clock->setTime(currentTime);
+      _clock.setTime(currentTime);
 
       // Parse sunrise
       auto sunriseString = payload["sunrise"].as<char*>();
@@ -75,7 +66,7 @@ void API::sync() {
       auto sunsetString = payload["sunset"].as<char*>();
       Time sunset = this->parseTime(sunsetString);
 
-      _sunsetSunrise->set(sunrise, sunset);
+      _sunsetSunrise.set(sunrise, sunset);
       
       // Save last sync
       LastSync = currentTime;
@@ -104,7 +95,7 @@ void API::updateFirmware(const char* host, const char* path) {
     Serial.print(host);
     Serial.print(" with path: ");
     Serial.println(path);
-    ESPhttpUpdate.update(host, 80, path);
+    ESPhttpUpdate.update(_wifiClient, host, 80, path);
     Serial.println("Done updating.");
 }
 

@@ -12,15 +12,16 @@
 extern struct ConfigStorageStruct ClockConfig;
 
 class API {
-  static Clock* _clock;
-  static SunsetSunrise* _sunsetSunrise;
   public:
-    API();
-    void setup(Clock *clock, SunsetSunrise *sunsetSunrise);
+    API(Clock& clock, SunsetSunrise& sunsetSunrise, WiFiClient& wifiClient) : _clock(clock), _sunsetSunrise(sunsetSunrise), _wifiClient(wifiClient) {} ;
+    void setup();
     void loop();
     void sync();
     Time lastSync();
   private:
+    Clock& _clock;
+    SunsetSunrise& _sunsetSunrise;
+    WiFiClient& _wifiClient;
     void updateFirmware(const char* host, const char* path);
     Time parseTime(const char *string);
 };
